@@ -1,5 +1,11 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, useLocation, Navigate  } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+  Navigate,
+} from "react-router-dom";
 import Login from "./pages/Login/Login";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import "./App.css";
@@ -7,6 +13,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Appointment from "./pages/Appointment/Appointment";
 import AppNavBar from "./components/AppNavBar";
 import { useUser } from "./context/UserContext";
+import Admin from "./pages/Admin/Admin";
 
 const theme = createTheme({
   palette: {
@@ -22,14 +29,39 @@ const theme = createTheme({
   },
 });
 function ProtectedRoute({ children }) {
-  const { user } = useUser(); // Use the custom hook to get the user object
-  if (!user.isLogin) { // Access isLogin within the user object
-    // Redirect to login page if not authenticated
+  const { user } = useUser();
+  if (!user.isLogin) {
+    console.log(user.isLogin);
+
     return <Navigate to="/login" />;
   }
   return children;
 }
-// Wrapper component to handle conditional rendering of AppNavBar
+
+const HomeRoute = () => {
+  const { user } = useUser();
+
+  if (user?.type === "doctors") {
+    return (
+      <ProtectedRoute>
+        <Admin />
+      </ProtectedRoute>
+    );
+  }
+
+  return <Dashboard />;
+};
+
+const LoginRouteGuard = ({ children }) => {
+  const { user } = useUser();
+
+  if (user.isLogin) {
+    return <Navigate to="/" />;
+  }
+
+  return children;
+};
+
 function AppWrapper() {
   const location = useLocation();
 
@@ -39,8 +71,15 @@ function AppWrapper() {
       {location.pathname !== "/login" && <AppNavBar />}
 
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/" element={<Dashboard />} />
+        <Route
+          path="/login"
+          element={
+            <LoginRouteGuard>
+              <Login />
+            </LoginRouteGuard>
+          }
+        />
+        <Route path="/" element={<HomeRoute />} />
         <Route
           path="/appointment"
           element={

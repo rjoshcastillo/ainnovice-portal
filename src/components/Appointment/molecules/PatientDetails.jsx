@@ -279,7 +279,7 @@ const PatientDetails = ({ user }) => {
           variant="contained"
           color="primary"
           fullWidth
-          sx={{ marginTop: 2 }}
+          sx={{ marginTop: 2, height: 50 }}
           onClick={handleSubmit}
         >
           Submit

@@ -1,9 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 
-// Create a UserContext
 const UserContext = createContext();
 
-// Create a provider component
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState({
     fullname: "",
@@ -13,19 +11,17 @@ export const UserProvider = ({ children }) => {
     account_id: "",
     gender: "",
     isLogin: false,
+    type: "",
   });
 
-  // Function to update user details and save the whole object to localStorage
   const updateUser = (userData) => {
     setUser((prevUser) => {
       const updatedUser = { ...prevUser, ...userData };
-      // Save the updated user object to localStorage
       localStorage.setItem("userInfo", JSON.stringify(updatedUser));
       return updatedUser;
     });
   };
 
-  // Load user data from localStorage when the component mounts
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("userInfo"));
     if (storedUser) {
@@ -33,8 +29,12 @@ export const UserProvider = ({ children }) => {
     }
   }, []);
 
+  const logout = () => {
+    localStorage.removeItem("userInfo");
+  };
+
   return (
-    <UserContext.Provider value={{ user, updateUser }}>
+    <UserContext.Provider value={{ user, logout, updateUser }}>
       {children}
     </UserContext.Provider>
   );

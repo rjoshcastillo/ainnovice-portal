@@ -29,10 +29,10 @@ const Dashboard = () => {
   return (
     <Box>
       <Container sx={{ my: 6 }}>
-        <Card sx={{ padding: 4 }}>
+        <Grid sx={{ padding: 4 }}>
           <Grid item xs={12} md={6}>
             <Typography variant="h4" component="h1" gutterBottom>
-              Welcome to our Online Services
+              Welcome, {user.fullname}
             </Typography>
             <Typography variant="body1" paragraph>
               At <strong>AINNovice</strong>, we are dedicated to revolutionizing your healthcare
@@ -49,7 +49,7 @@ const Dashboard = () => {
               Book an Appointment
             </Button>
           </Grid>
-        </Card>
+        </Grid>
       </Container>
       <Container>
         <Grid container sx={{ justifyContent: "space-between"}}>
@@ -69,7 +69,7 @@ const Dashboard = () => {
                 {[
                   { title: "Hospital Services", imgSrc: HospitalService },
                   { title: "Doctor Consultation", imgSrc: DoctorConsultation },
-                  { title: "Patient Support", imgSrc: PatientSupport },
+                  { title: "View Appointment", imgSrc: PatientSupport },
                 ].map((service) => (
                   <Grid item xs={12} sm={6} md={4} key={service.title}>
                     <Card>

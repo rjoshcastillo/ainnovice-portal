@@ -1,20 +1,46 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AInnoviceLogo from "../assets/logo/ainnovice_logo.png";
 import { useTheme } from "@mui/material/styles";
-import { AppBar, Toolbar, Typography, Button } from "@mui/material";
+import { AppBar, Toolbar, Typography, Button, IconButton, Avatar, Menu, MenuItem } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import { useUser } from "../context/UserContext";
 
 function AppNavBar() {
   const navigate = useNavigate();
   const theme = useTheme();
-  const { user } = useUser();
+  const { user, logout } = useUser();
+  
+  // State for managing the dropdown menu
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+
   const handleLoginClick = () => {
     navigate("/login");
   };
+
   const handleHomeClick = () => {
     navigate("/");
   };
+
+  const handleProfileClick = () => {
+    navigate("/profile"); 
+    handleCloseMenu(); 
+  };
+
+  const handleLogoutClick = () => {
+    logout();
+    window.location.reload();
+  };
+
+  const handleAvatarClick = (event) => {
+    setAnchorEl(event.currentTarget); 
+  };
+
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <AppBar
       position="static"
@@ -46,7 +72,9 @@ function AppNavBar() {
           </Button>
           <Button color="inherit">Our Services</Button>
           <Button color="inherit">About Us</Button>
-          {!user.isLogin && (
+
+          {/* Conditionally render Login button or profile icon */}
+          {!user.isLogin ? (
             <Button
               variant="contained"
               sx={{
@@ -57,6 +85,28 @@ function AppNavBar() {
             >
               Login
             </Button>
+          ) : (
+            <>
+              <IconButton onClick={handleAvatarClick}>
+                <Avatar alt={user.fullname} src="/static/images/avatar/1.jpg" /> {/* Placeholder Avatar */}
+              </IconButton>
+              <Menu
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleCloseMenu}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "right",
+                }}
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+              >
+                <MenuItem onClick={handleProfileClick}>Profile</MenuItem>
+                <MenuItem onClick={handleLogoutClick}>Logout</MenuItem>
+              </Menu>
+            </>
           )}
         </Grid>
       </Toolbar>

@@ -35,7 +35,8 @@ const LoginForm = () => {
           employed: response.data.employed,
           account_id: response.data.accountId,
           gender: response.data.gender,
-          isLogin: true
+          isLogin: true,
+          type: response.data.type,
         };
 
         updateUser(userData); // Store user details in the context
