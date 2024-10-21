@@ -3,7 +3,6 @@ import { Button, Grid2 as Grid, TextField } from '@mui/material';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import moment from 'moment';
 import './ScheduleSelector.scss'; // Import the SCSS file
 
 const ScheduleSelector = () => {
@@ -19,14 +18,6 @@ const ScheduleSelector = () => {
     setSelectedTime(time);
   };
 
-  const handleSubmit = () => {
-    if (selectedDate && selectedTime) {
-      alert(`Selected date: ${selectedDate.toLocaleDateString()}, Time: ${selectedTime}`);
-    } else {
-      alert('Please select both date and time.');
-    }
-  };
-  console.log(moment(selectedDate).format('YYYY-MM-DD'))
   return (
     <div className="schedule-selector">
       <h2>Schedule Selection</h2>
@@ -45,7 +36,7 @@ const ScheduleSelector = () => {
       <div className="time-selector">
         <h3>Select Time</h3>
         <Grid container spacing={2}>
-          <Grid item xs={12}>
+          <Grid xs={12}>
             <h4>Morning</h4>
             <div className="time-slot-buttons">
               {timeSlots.morning.map((time) => (
@@ -61,7 +52,7 @@ const ScheduleSelector = () => {
             </div>
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid xs={12}>
             <h4>Afternoon</h4>
             <div className="time-slot-buttons">
               {timeSlots.afternoon.map((time) => (

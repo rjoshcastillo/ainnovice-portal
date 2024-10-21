@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard/Dashboard";
 import "./App.css";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Appointment from "./pages/Appointment/Appointment";
+import AppNavBar from "./components/AppNavBar";
 
 const theme = createTheme({
   palette: {
@@ -24,6 +25,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <Router>
         <div className="App">
+ <AppNavBar />
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/" element={<Dashboard />} />

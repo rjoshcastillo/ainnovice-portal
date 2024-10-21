@@ -3,7 +3,8 @@ import { TextField, Button, IconButton, InputAdornment } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import "./loginForm.scss";
 import AInnoviceLogo from "../../assets/logo/ainnovice_logo.png";
-import { Login } from "../../services/account.services"; // Assuming this is your login service
+import { Login } from "../../services/account.services";
+import { useUser } from "../../context/UserContext";
 import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
@@ -13,6 +14,7 @@ const LoginForm = () => {
   const [errorMessage, setErrorMessage] = useState(null); // To handle error messages
   const [loading, setLoading] = useState(false); // To handle loading state
   const navigate = useNavigate();
+  const { updateUser } = useUser();
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const handleMouseDownPassword = (event) => event.preventDefault();
@@ -25,13 +27,28 @@ const LoginForm = () => {
       const response = await Login({ email, password });
 
       if (response.status) {
-        navigate('/');
+        // Assuming the response has user data
+        const userData = {
+          fullname: response.data.fullName,
+          age: response.data.age,
+          jobDescription: response.data.jobDescription,
+          employed: response.data.employed,
+          account_id: response.data.accountId,
+          gender: response.data.gender,
+          isLogin: true
+        };
+
+        updateUser(userData); // Store user details in the context
+        navigate("/");
+
       } else {
         setErrorMessage("Invalid email or password");
+        updateUser({ isLogin: false });
       }
     } catch (error) {
       // Handle any errors during the login process
       setErrorMessage("An error occurred during login. Please try again.");
+      updateUser({ isLogin: false });
     } finally {
       setLoading(false);
     }

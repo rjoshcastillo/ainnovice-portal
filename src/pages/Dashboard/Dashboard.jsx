@@ -1,7 +1,5 @@
 import React from "react";
 import {
-  AppBar,
-  Toolbar,
   Typography,
   Button,
   Box,
@@ -15,13 +13,21 @@ import HeaderImage from "../../assets/doctor-patient-image.svg";
 import HospitalService from "../../assets/hospital-service.svg";
 import PatientSupport from "../../assets/patient-support.svg";
 import DoctorConsultation from "../../assets/doctor-consultation.svg";
-import AppNavBar from "../../components/AppNavBar";
-
-
+import { useUser } from "../../context/UserContext"; 
+import { useNavigate } from "react-router-dom";
 const Dashboard = () => {
+  const { user } = useUser(); 
+  const navigate = useNavigate(); // For navigation
+
+  const handleAppointmentClick = () => {
+    if (user.isLogin) {
+      navigate("/appointment"); // Redirect to the appointment page if logged in
+    } else {
+      navigate("/login"); // Redirect to login page if not logged in
+    }
+  };
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppNavBar />
       <Container sx={{ my: 4 }}>
         <Grid container spacing={4} alignItems="center">
           <Grid item xs={12} md={6}>
@@ -32,7 +38,7 @@ const Dashboard = () => {
               Here at Chong Hua Hospital, we offer the most comprehensive online
               healthcare services at affordable costs.
             </Typography>
-            <Button variant="contained" color="primary">
+            <Button variant="contained" color="primary" onClick={handleAppointmentClick}>
               Book an Appointment
             </Button>
           </Grid>

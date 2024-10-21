@@ -1,51 +1,16 @@
-import React, { useState } from "react";
+import React from "react";
 import {
-  TextField,
-  MenuItem,
-  Button,
-  Slider,
-  Select,
-  FormControl,
-  InputLabel,
   Typography,
-  Grid2 as Grid,
   Box,
 } from "@mui/material";
-import { LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import ScheduleSelector from "./molecules/ScheduleSelector";
 
 const AppointmentForm = () => {
-  const [formData, setFormData] = useState({
-    fullName: "",
-    gender: "Male",
-    employed: "No",
-    jobDescription: "",
-    alcoholConsumption: "No",
-    smoking: "No",
-    height: "",
-    weight: "",
-    breathingTrouble: "No",
-    painLevel: 0,
-    painPart: "",
-    medicalConcern: "",
-    symptoms: "",
-    temperature: "",
-    medicalConcernStart: null,
-  });
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
 
-  const handleDateChange = (date) => {
-    setFormData({ ...formData, medicalConcernStart: date });
-  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Form Data Submitted: ", formData);
   };
 
   return (
