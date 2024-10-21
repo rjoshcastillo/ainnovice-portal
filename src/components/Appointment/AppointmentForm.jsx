@@ -1,28 +1,24 @@
 import React from "react";
-import { Typography, Box, Grid2 as Grid, Button } from "@mui/material";
-import ScheduleSelector from "./molecules/ScheduleSelector";
-
+import { Typography } from "@mui/material";
+import PatientDetails from "./molecules/PatientDetails";
+import { useUser } from "../../context/UserContext";
 const AppointmentForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
   };
+  const { user } = useUser();
 
   return (
-    <Box
-      sx={{
-        maxWidth: 800,
-        margin: "auto",
-        padding: "20px",
-        backgroundColor: "#f9f9f9",
-        borderRadius: "10px",
-      }}
-    >
-      <Typography variant="h4" align="center" gutterBottom>
-        Appointment Form
-      </Typography>
+    <div style={{ padding: "20px" }}>
+      <div style={{ marginTop: "20px" }}>
+        <Typography variant="h4" textAlign={"center"} gutterBottom>
+          Appointment Form
+        </Typography>
+      </div>
       <form onSubmit={handleSubmit}>
-        <ScheduleSelector />
-        <Grid item xs={12}>
+        <PatientDetails user={user}/>
+        {/* <ScheduleSelector /> */}
+        {/* <Grid item xs={12}>
           <Button
             fullWidth
             type="submit"
@@ -32,9 +28,9 @@ const AppointmentForm = () => {
           >
             Submit
           </Button>
-        </Grid>
+        </Grid> */}
       </form>
-    </Box>
+    </div>
   );
 };
 
