@@ -4,7 +4,7 @@ import Login from "./pages/Login/Login";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import "./App.css";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import AppointmentForm from "./pages/Forms/AppointmentForm";
+import Appointment from "./pages/Appointment/Appointment";
 
 const theme = createTheme({
   palette: {
@@ -27,7 +27,7 @@ function App() {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/" element={<Dashboard />} />
-            <Route path="/book_appointment" element={<AppointmentForm />} />
+            <Route path="/appointment" element={<Appointment />} />
           </Routes>
         </div>
       </Router>

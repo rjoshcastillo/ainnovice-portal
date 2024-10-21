@@ -14,7 +14,7 @@ import {
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import ScheduleSelector from "../../components/Forms/Appointment/ScheduleSelector";
+import ScheduleSelector from "./molecules/ScheduleSelector";
 
 const AppointmentForm = () => {
   const [formData, setFormData] = useState({
