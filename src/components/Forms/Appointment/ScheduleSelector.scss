@@ -1,0 +1,33 @@
+.schedule-selector {
+  font-family: Arial, sans-serif;
+  max-width: 600px;
+  margin: auto;
+  padding: 20px;
+
+  h2, h3 {
+    margin-bottom: 20px;
+  }
+
+  .time-selector {
+    margin-top: 20px;
+
+    .time-slot-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+  }
+
+  .actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 5px;
+    }
+  }
+}
