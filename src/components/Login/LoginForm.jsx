@@ -32,7 +32,7 @@ const LoginForm = () => {
           fullname: response.data.fullName,
           age: response.data.age,
           jobDescription: response.data.jobDescription,
-          employed: response.data.employed,
+          employed: parseInt(response.data.employed) === 1 ? true : false,
           account_id: response.data.accountId,
           gender: response.data.gender,
           isLogin: true,

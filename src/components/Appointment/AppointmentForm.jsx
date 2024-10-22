@@ -1,36 +1,106 @@
-import React from "react";
-import { Typography } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import {
+
+  Button,
+  Box,
+  Stepper,
+  Step,
+  StepLabel,
+  Typography,
+  StepContent,
+} from "@mui/material";
 import PatientDetails from "./molecules/PatientDetails";
 import { useUser } from "../../context/UserContext";
+import PatientConcerns from "./molecules/PatientConcerns";
+import ScheduleSelector from "./molecules/ScheduleSelector";
+
 const AppointmentForm = () => {
-  const handleSubmit = (e) => {
-    e.preventDefault();
-  };
   const { user } = useUser();
+  const [activeStep, setActiveStep] = useState(0);
+  const [formData, setFormData] = useState({});
+  const formSteps = [
+    { label: "Patient Details" },
+    { label: "Describe Concern" },
+    { label: "Select a Date" },
+  ];
+
+  const getPatientDetails = (patientDetails) => {
+    setFormData({
+      ...formData,
+      ...patientDetails
+    })
+  };
+
+  const getPatientConcerns = (patientConcerns) => {
+    setFormData({
+      ...formData,
+      ...patientConcerns
+    })
+  };
+
+  const getPatientScheduleDate = (scheduleDate) => {
+    setFormData({
+      ...formData,
+      ...scheduleDate
+    })
+  };
+
+  const handleNext = () => {
+    if (activeStep === formSteps.length - 1) {
+      console.log(formData);
+      /* Process saving to database */
+    } else {
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    }
+  };
+
+  const handleBack = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <div style={{ marginTop: "20px" }}>
-        <Typography variant="h4" textAlign={"center"} gutterBottom>
-          Appointment Form
-        </Typography>
-      </div>
-      <form onSubmit={handleSubmit}>
-        <PatientDetails user={user}/>
-        {/* <ScheduleSelector /> */}
-        {/* <Grid item xs={12}>
-          <Button
-            fullWidth
-            type="submit"
-            variant="contained"
-            color="primary"
-            sx={{ marginTop: 2 }}
-          >
-            Submit
-          </Button>
-        </Grid> */}
-      </form>
-    </div>
+    <Box sx={{ maxWidth: 800, margin: "0 auto", my: 4 }}>
+      <Stepper activeStep={activeStep} orientation="vertical">
+        {formSteps.map((step, index) => (
+          <Step key={step.label}>
+            <StepLabel
+              optional={
+                index === formSteps.length - 1 ? (
+                  <Typography variant="caption">Last step</Typography>
+                ) : null
+              }
+            >
+              {step.label}
+            </StepLabel>
+            <StepContent>
+              {index === 0 ? (
+                <PatientDetails user={user} data={formData} callBack={getPatientDetails} />
+              ) : index === 1 ? (
+                <PatientConcerns data={formData} callBack={getPatientConcerns} />
+              ) : index === 2 ? <ScheduleSelector data={formData} callBack={getPatientScheduleDate} /> : (
+                <></>
+              )}
+              <Box sx={{ mb: 2 }}>
+                <Button
+                  variant="contained"
+                  onClick={handleNext}
+                  sx={{ mt: 1, mr: 1 }}
+                >
+                  {index === formSteps.length - 1 ? "Finish" : "Continue"}
+                </Button>
+                <Button
+                  disabled={index === 0}
+                  onClick={handleBack}
+                  sx={{ mt: 1, mr: 1 }}
+                >
+                  Back
+                </Button>
+              </Box>
+            </StepContent>
+          </Step>
+        ))}
+      </Stepper>
+    </Box>
   );
 };
 
