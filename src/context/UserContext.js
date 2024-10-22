@@ -10,6 +10,8 @@ export const UserProvider = ({ children }) => {
     employed: false,
     account_id: "",
     gender: "",
+    email: "",
+    contactNumber: "",
     isLogin: false,
     type: "",
   });

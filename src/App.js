@@ -7,13 +7,14 @@ import {
   Navigate,
 } from "react-router-dom";
 import Login from "./pages/Login/Login";
-import Dashboard from "./pages/Dashboard/Dashboard";
+import Home from "./pages/Home/Home";
 import "./App.css";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Appointment from "./pages/Appointment/Appointment";
 import AppNavBar from "./components/AppNavBar";
 import { useUser } from "./context/UserContext";
 import Admin from "./pages/Admin/Admin";
+import Patient from "./pages/Patient/Patient";
 
 const theme = createTheme({
   palette: {
@@ -31,8 +32,6 @@ const theme = createTheme({
 function ProtectedRoute({ children }) {
   const { user } = useUser();
   if (!user.isLogin) {
-    console.log(user.isLogin);
-
     return <Navigate to="/login" />;
   }
   return children;
@@ -40,16 +39,23 @@ function ProtectedRoute({ children }) {
 
 const HomeRoute = () => {
   const { user } = useUser();
-
-  if (user?.type === "doctors") {
-    return (
-      <ProtectedRoute>
-        <Admin />
-      </ProtectedRoute>
-    );
+  if (!user?.isLogin) {
+    return <Home />;
+  } else {
+    if (user?.type === "doctors") {
+      return (
+        <ProtectedRoute>
+          <Admin />
+        </ProtectedRoute>
+      );
+    } else if (user?.type === "patients") {
+      return (
+        <ProtectedRoute>
+          <Patient />
+        </ProtectedRoute>
+      );
+    }
   }
-
-  return <Dashboard />;
 };
 
 const LoginRouteGuard = ({ children }) => {

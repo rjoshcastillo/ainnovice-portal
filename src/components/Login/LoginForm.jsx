@@ -36,6 +36,8 @@ const LoginForm = () => {
           account_id: response.data.accountId,
           gender: response.data.gender,
           isLogin: true,
+          email: response.data.email,
+          contactNumber: response.data.contact_number,
           type: response.data.type,
         };
 

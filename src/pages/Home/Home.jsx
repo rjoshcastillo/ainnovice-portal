@@ -15,6 +15,7 @@ import PatientSupport from "../../assets/patient-support.svg";
 import DoctorConsultation from "../../assets/doctor-consultation.svg";
 import { useUser } from "../../context/UserContext";
 import { useNavigate } from "react-router-dom";
+
 const Dashboard = () => {
   const { user } = useUser();
   const navigate = useNavigate(); // For navigation
@@ -80,7 +81,7 @@ const Dashboard = () => {
                         alt={service.title}
                       />
                       <CardContent>
-                        <Typography gutterBottom variant="h5" component="div">
+                        <Typography gutterBottom sx={{ fontSize: 20, textAlign: 'center' }}>
                           {service.title}
                         </Typography>
                       </CardContent>
