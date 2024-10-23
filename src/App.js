@@ -10,6 +10,7 @@ import Login from "./pages/Login/Login";
 import Home from "./pages/Home/Home";
 import "./App.css";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import CssBaseline from '@mui/material/CssBaseline';
 import Appointment from "./pages/Appointment/Appointment";
 import AppNavBar from "./components/AppNavBar";
 import { useUser } from "./context/UserContext";
@@ -27,6 +28,9 @@ const theme = createTheme({
     tertiary: {
       main: "#FFFF",
     },
+  },
+  typography: {
+    fontFamily: 'Poppins, sans-serif',
   },
 });
 function ProtectedRoute({ children }) {
@@ -102,6 +106,7 @@ function AppWrapper() {
 function App() {
   return (
     <ThemeProvider theme={theme}>
+      <CssBaseline />
       <Router>
         <div className="App">
           <AppWrapper /> {/* Using AppWrapper to control navbar rendering */}

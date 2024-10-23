@@ -9,15 +9,16 @@ import {
   Tab,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import patientProfileImg from "../../assets/patient-profile.svg";
+import patientProfileImg from "../../assets/patient-profile.png";
 import { useUser } from "../../context/UserContext";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import PatientDetails from "../../components/Patient/PatientDetails";
 import { useNavigate } from "react-router-dom";
+import AppointmentDashboard from "../../components/Patient/AppointmentDashboard";
 
 function Patient() {
   const { user } = useUser();
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const [value, setValue] = React.useState("1");
 
   const handleChange = (event, newValue) => {
@@ -42,13 +43,11 @@ function Patient() {
           }}
         >
           <Box>
-            <Card>
-              <CardMedia
-                component="img"
+              <img
                 height="200"
-                image={patientProfileImg}
+                src={patientProfileImg}
+                alt="Patient"
               />
-            </Card>
           </Box>
           <Box
             sx={{ display: "flex", flexDirection: "column", gap: 1 }}
@@ -72,12 +71,10 @@ function Patient() {
               >
                 <Tab label="My Details" value="1" />
                 <Tab label="Appointments" value="2" />
-                <Tab label="Medical History" value="3" />
               </TabList>
             </Box>
             <TabPanel value="1" sx={{ px: 0}}><PatientDetails /></TabPanel>
-            <TabPanel value="2">Item Two</TabPanel>
-            <TabPanel value="3">Item Three</TabPanel>
+            <TabPanel value="2" sx={{ px: 0}}><AppointmentDashboard/></TabPanel>
           </TabContext>
         </Box>
       </Container>
