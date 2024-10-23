@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-
   Button,
   Box,
   Stepper,
@@ -13,6 +12,7 @@ import PatientDetails from "./molecules/PatientDetails";
 import { useUser } from "../../context/UserContext";
 import PatientConcerns from "./molecules/PatientConcerns";
 import ScheduleSelector from "./molecules/ScheduleSelector";
+import SpecialistDetails from "./molecules/SpecialistDetails";
 
 const AppointmentForm = () => {
   const { user } = useUser();
@@ -22,38 +22,42 @@ const AppointmentForm = () => {
     { label: "Patient Details" },
     { label: "Describe Concern" },
     { label: "Select a Date" },
+    { label: "Choose your Doctor" },
   ];
 
   const getPatientDetails = (patientDetails) => {
     setFormData({
       ...formData,
-      ...patientDetails
-    })
+      ...patientDetails,
+    });
   };
 
   const getPatientConcerns = (patientConcerns) => {
     setFormData({
       ...formData,
-      ...patientConcerns
-    })
+      ...patientConcerns,
+    });
   };
 
   const getPatientScheduleDate = (scheduleDate) => {
     setFormData({
       ...formData,
-      ...scheduleDate
-    })
+      ...scheduleDate,
+    });
   };
-
+  const getSpecialistDetails = (specialistDetails) => {
+    setFormData({
+      ...formData,
+      ...specialistDetails,
+    });
+  };
   const handleNext = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+
     if (activeStep === formSteps.length - 1) {
       console.log(formData);
-      /* Process saving to database */
-    } else {
-      setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    }
+    } 
   };
-
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
@@ -74,10 +78,24 @@ const AppointmentForm = () => {
             </StepLabel>
             <StepContent>
               {index === 0 ? (
-                <PatientDetails user={user} data={formData} callBack={getPatientDetails} />
+                <PatientDetails
+                  user={user}
+                  data={formData}
+                  callBack={getPatientDetails}
+                />
               ) : index === 1 ? (
-                <PatientConcerns data={formData} callBack={getPatientConcerns} />
-              ) : index === 2 ? <ScheduleSelector data={formData} callBack={getPatientScheduleDate} /> : (
+                <PatientConcerns
+                  data={formData}
+                  callBack={getPatientConcerns}
+                />
+              ) : index === 2 ? (
+                <ScheduleSelector
+                  data={formData}
+                  callBack={getPatientScheduleDate}
+                />
+              ) : index === 3 ? (
+                <SpecialistDetails data={formData} callBack={getSpecialistDetails}/>
+              ) : (
                 <></>
               )}
               <Box sx={{ mb: 2 }}>

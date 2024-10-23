@@ -48,7 +48,7 @@ const ScheduleSelector = ({ data, callBack }) => {
         </LocalizationProvider>
       </Box>
       <FormControl component="fieldset" margin="normal" sx={{ flex: 1 }}>
-        <FormLabel component="legend">Preffered Time</FormLabel>
+        <FormLabel component="legend">Preffered Time (AI will decide the best time for you)</FormLabel>
         <RadioGroup
           name="amPm"
           value={String(scheduleData.amPm)}
