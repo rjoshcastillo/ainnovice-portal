@@ -1,102 +1,121 @@
-import {
-    Box,
-    FormControl,
-    InputLabel,
-    MenuItem,
-    Select,
-    Typography,
-  } from "@mui/material";
-  import { useEffect, useState } from "react";
-  import { useUser } from "../../../context/UserContext";
-  import Assistant from "../../../services/assistant.services";
-  
-  const SpecialistDetails = ({ data, callBack }) => {
-    const [specialistDetails, setSpecialistDetails] = useState({});
-    const { doctorsList } = useUser();
-    const [suggestedSpecialist, setSuggestedSpecialist] = useState(null);
-    const [filteredSpecialist, setFilteredSpecialist] = useState(null);
-  
-    const onChange = (e) => {
-      const { name, value } = e.target;
-      setSpecialistDetails({ ...specialistDetails, [name]: value });
-      callBack({ ...specialistDetails, [name]: value });
-    };
-  
-    const getFilteredSpecialist = () => {
-      if (suggestedSpecialist) {
-        const filtered = doctorsList.filtered((doctor) => doctor.specialty === suggestedSpecialist.name);
-        setFilteredSpecialist(filtered);
-      }
-    };
-  
-    const generateSpecialist = async () => {
-      try {
-        const payload = {
-          medical_concern: data?.medical_concern,
-        };
-        const res = await Assistant.getGeneralMedicalNeed(payload);
-        const sp = res.data?.medical_field_needed;
-  
-        if (typeof sp === "string") {
-          setSuggestedSpecialist({ name: sp });
-        } else if (typeof sp === "object") {
-          setSuggestedSpecialist(sp);
-        }
-      } catch (error) {
-        console.error("Error fetching suggested specialist:", error);
-      }
-    };
-  
-    useEffect(() => {
-      generateSpecialist();
-    }, []);
-  
-    useEffect(() => {
-      if (data) {
-        setSpecialistDetails({
-          doctor: data?.doctor || null,
-        });
-      }
-      getFilteredSpecialist(); // Call this whenever data changes
-    }, [data, suggestedSpecialist]);
-  
-    return (
-      <Box>
-        <Typography>
-          Based on your medical concern, our AI suggests consulting with a&nbsp;
-          <strong>
-            {suggestedSpecialist ? suggestedSpecialist.name : "..."}
-          </strong>
-          &nbsp;specialist to address your needs.
-          <br />
-          {suggestedSpecialist && suggestedSpecialist.description && (
-            <Typography
-              component="span"
-              sx={{ fontStyle: "italic", fontSize: 14 }}
-            >
-              {suggestedSpecialist.description}
-            </Typography>
-          )}
-        </Typography>
-        <FormControl fullWidth margin="normal" sx={{ flex: 1 }}>
-          <InputLabel>Doctor</InputLabel>
-          <Select
-            label="Doctor"
-            name="doctorSpecialization"
-            value={specialistDetails.doctor || ""}
-            onChange={onChange}
-            sx={{ flex: 1 }}
-          >
-            {filteredSpecialist && (
-              <MenuItem key={filteredSpecialist.doctor_id || filteredSpecialist.name} value={filteredSpecialist.name}>
-                {filteredSpecialist.name}
-              </MenuItem>
-            )}
-          </Select>
-        </FormControl>
-      </Box>
-    );
+import { Card, CardContent, Typography, Avatar, Box } from "@mui/material";
+import Grid from "@mui/material/Grid2";
+import { useEffect, useState } from "react";
+import { useUser } from "../../../context/UserContext";
+
+const SpecialistDetails = ({ data, callBack, canProceed }) => {
+  const [selectedDoctor, setSelectedDoctor] = useState({});
+  const { doctorsList } = useUser();
+  const [filteredDoctors, setFilteredDoctors] = useState([]);
+
+  const handleCardClick = (selected) => {
+    setSelectedDoctor({
+      doctor_id: selected.doctor_id,
+    });
+    callBack({ doctor_id: selected.doctor_id });
+    checkIfCanProceed({
+      doctor_id: selected.doctor_id,
+    });
   };
-  
-  export default SpecialistDetails;
-  
+
+  const checkIfCanProceed = (details) => {
+    const hasValue = Object.values(details).every(
+      (value) => value !== "" && value !== null && value !== undefined
+    );
+
+    canProceed(hasValue);
+  };
+
+  const filterDoctorBySpecialization = (filter) => {
+    if (!filter) return doctorsList;
+    return doctorsList.filter((doctor) => doctor.specialty === filter);
+  };
+
+  useEffect(() => {
+    const filtered = filterDoctorBySpecialization(data?.specialtyDoctor);
+    setFilteredDoctors(filtered);
+    setSelectedDoctor({
+      doctor_id: null,
+    });
+    callBack({
+      doctor_id: null,
+    });
+    checkIfCanProceed({
+      doctor_id: null,
+    });
+  }, []);
+
+  return (
+    <Box>
+      {data?.knowADoctor ? (
+        <Typography>Base on the doctor's specialty you selected</Typography>
+      ) : (
+        <Typography>
+          Based on your medical concern, our AI suggests consulting with...
+        </Typography>
+      )}
+      <Grid
+        my={4}
+        container
+        sx={{ gap: 2, maxHeight: 450, overflow: "scroll", padding: "2px" }}
+      >
+        {filteredDoctors.map((doctor, index) => (
+          <Card
+            key={index}
+            onClick={() => handleCardClick(doctor)}
+            elevation={3}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              borderRadius: 2,
+              cursor: "pointer",
+              transition: "background-color 0.3s ease",
+              backgroundColor:
+                selectedDoctor?.doctor_id === doctor.doctor_id
+                  ? "primary.main"
+                  : "background.paper",
+              color:
+                selectedDoctor?.doctor_id === doctor.doctor_id
+                  ? "background.paper"
+                  : "primary.main",
+              width: "45%",
+              height: 90,
+            }}
+          >
+            <Box sx={{ ml: 2 }}>
+              <Avatar />
+            </Box>
+            <CardContent sx={{ flex: 1, position: "relative" }}>
+              <Typography variant="span" sx={{ fontWeight: 600 }}>
+                {doctor.name}
+              </Typography>
+              <Typography variant="body2" sx={{ fontSize: 12 }}>
+                {doctor.specialty}
+              </Typography>
+              <Box
+                sx={{
+                  position: "absolute",
+                  right: 16,
+                  color:
+                    selectedDoctor?.doctor_id === doctor.doctor_id
+                      ? "white"
+                      : "primary.main",
+                  cursor: "pointer",
+                  "&:hover": {
+                    textDecoration: "underline",
+                  },
+                }}
+              >
+                <Typography variant="body2">
+                  View
+                </Typography>
+              </Box>
+            </CardContent>
+          </Card>
+        ))}
+      </Grid>
+    </Box>
+  );
+};
+
+export default SpecialistDetails;

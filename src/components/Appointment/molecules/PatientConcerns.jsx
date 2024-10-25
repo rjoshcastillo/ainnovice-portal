@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   TextField,
   MenuItem,
@@ -18,28 +18,58 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
 import moment from "moment";
 
-const PatientConcerns = ({ data, callBack }) => {
+const PatientConcerns = ({ data, callBack, canProceed }) => {
   const [patientConcerns, setPatientConcerns] = useState({});
   const { doctorsList, updateDoctorsList } = useUser();
 
-  const handleSliderChange = (e, newValue) => {
-    setPatientConcerns({ ...patientConcerns, painLevel: newValue });
-    callBack({ ...patientConcerns, painLevel: newValue });
+  const debounceTimeout = useRef(null);
+
+  const onChange = (e, newValue = null, inputType = "input") => {
+    let name, value;
+
+    if (inputType === "input") {
+      name = e.target.name;
+      value =
+        name === "knowADoctor" || name === "breathingTrouble"
+          ? e.target.value === "true"
+          : e.target.value;
+    } else if (inputType === "slider") {
+      name = "painLevel";
+      value = newValue;
+    } else if (inputType === "date") {
+      name = "medicalConcernStart";
+      value = newValue;
+    }
+
+    setPatientConcerns((prevDetails) => {
+      const updatedDetails = { ...prevDetails, [name]: value };
+
+      if (debounceTimeout.current) {
+        clearTimeout(debounceTimeout.current);
+      }
+
+      debounceTimeout.current = setTimeout(() => {
+        callBack(updatedDetails);
+        checkIfCanProceed(updatedDetails);
+      }, 200);
+
+      return updatedDetails;
+    });
   };
 
-  const handleDateChange = (newDate) => {
-    setPatientConcerns({ ...patientConcerns, medicalConcernStart: newDate });
-    callBack({ ...patientConcerns, medicalConcernStart: newDate });
-  };
+  const checkIfCanProceed = (details) => {
+    // Check all other values, ignoring specialtyDoctor if knowADoctor is false
+    let hasValue = Object.entries(details).every(([key, value]) => {
+      // Ignore specialtyDoctor if knowADoctor is false
+      if (key === "specialtyDoctor" && !details.knowADoctor) {
+        return true; // Skip the check for specialtyDoctor
+      }
 
-  const onChange = (e) => {
-    const { name, value } = e.target;
-    const newValue =
-      name === "knowADoctor" || name === "breathingTrouble"
-        ? value === "true"
-        : value;
-    setPatientConcerns({ ...patientConcerns, [name]: newValue });
-    callBack({ ...patientConcerns, [name]: newValue });
+      // Check for empty, null, or undefined values
+      return value !== "" && value !== null && value !== undefined;
+    });
+
+    canProceed(hasValue);
   };
 
   const getDoctorsList = async () => {
@@ -56,15 +86,13 @@ const PatientConcerns = ({ data, callBack }) => {
       }
     }
   };
-  useEffect(() => {
-    getDoctorsList();
-  }, [doctorsList]);
 
   useEffect(() => {
+    getDoctorsList();
     if (data) {
       setPatientConcerns({
         knowADoctor: data?.knowADoctor || false,
-        doctor: data?.doctor || "",
+        specialtyDoctor: data?.specialtyDoctor || "",
         breathingTrouble: data?.breathingTrouble || false,
         painPart: data?.painPart || "",
         painLevel: data?.painLevel || 0,
@@ -74,8 +102,13 @@ const PatientConcerns = ({ data, callBack }) => {
         temperature: data?.temperature || "",
       });
     }
-  }, [data]);
-  useEffect(() => {}, [patientConcerns]);
+    return () => {
+      if (debounceTimeout.current) {
+        clearTimeout(debounceTimeout.current);
+      }
+    };
+  }, []);
+
   return (
     <Box>
       <Box
@@ -99,14 +132,14 @@ const PatientConcerns = ({ data, callBack }) => {
             <FormControlLabel value="false" control={<Radio />} label="No" />
           </RadioGroup>
         </FormControl>
-        {patientConcerns.knowADoctor ? (
+        {patientConcerns.knowADoctor && (
           <FormControl fullWidth margin="normal" sx={{ flex: 1 }}>
-            <InputLabel id="doctor-label">Specialty Doctor</InputLabel>
+            <InputLabel id="specialtyDoctor-label">Specialty Doctor</InputLabel>
             <Select
               label="Specialty Doctor"
-              labelId="doctor-label"
-              name="doctor"
-              value={patientConcerns.doctor || ""}
+              labelId="specialtyDoctor-label"
+              name="specialtyDoctor"
+              value={patientConcerns.specialtyDoctor || ""}
               onChange={onChange}
               sx={{ flex: 1 }}
             >
@@ -117,10 +150,9 @@ const PatientConcerns = ({ data, callBack }) => {
               ))}
             </Select>
           </FormControl>
-        ) : (
-          <></>
         )}
       </Box>
+
       <Box sx={{ display: "flex", justifyContent: "space-between", gap: 2 }}>
         <FormControl fullWidth margin="normal" sx={{ flex: 1 }}>
           <InputLabel id="painPart-label">Pain Part</InputLabel>
@@ -150,6 +182,21 @@ const PatientConcerns = ({ data, callBack }) => {
             ))}
           </Select>
         </FormControl>
+      </Box>
+
+      <Box sx={{ display: "flex", justifyContent: "space-between", gap: 2 }}>
+        <Box margin="normal" sx={{ flexGrow: 1, mr: 3 }}>
+          <FormLabel component="legend">Pain Level (0-10)</FormLabel>
+          <Slider
+            value={patientConcerns.painLevel || 0}
+            onChange={(e, newValue) => onChange(e, newValue, "slider")}
+            valueLabelDisplay="auto"
+            step={1}
+            min={0}
+            max={10}
+            marks
+          />
+        </Box>
         <FormControl component="fieldset" margin="normal" sx={{ flex: 1 }}>
           <FormLabel component="legend">Breathing Trouble</FormLabel>
           <RadioGroup
@@ -163,20 +210,7 @@ const PatientConcerns = ({ data, callBack }) => {
           </RadioGroup>
         </FormControl>
       </Box>
-      <Box margin="normal">
-        <FormLabel component="legend">Pain Level (0-10)</FormLabel>
-        <Slider
-          value={patientConcerns.painLevel || 0}
-          onChange={handleSliderChange}
-          valueLabelDisplay="auto"
-          step={1}
-          min={0}
-          max={10}
-          marks
-        />
-      </Box>
 
-      {/* Medical Concern */}
       <TextField
         label="Medical Concern"
         variant="outlined"
@@ -187,7 +221,6 @@ const PatientConcerns = ({ data, callBack }) => {
         onChange={onChange}
       />
 
-      {/* Symptoms */}
       <TextField
         label="Symptoms"
         variant="outlined"
@@ -210,7 +243,7 @@ const PatientConcerns = ({ data, callBack }) => {
           <MobileDatePicker
             label="Medical Concern Start Date"
             value={patientConcerns.medicalConcernStart || null}
-            onChange={handleDateChange}
+            onChange={(newDate) => onChange(null, newDate, "date")}
             renderInput={(props) => <TextField {...props} />}
           />
         </LocalizationProvider>
