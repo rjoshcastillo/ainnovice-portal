@@ -113,30 +113,34 @@ const AppointmentList = ({
           ))}
         </Grid>
       )}
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        mt={2}
-        sx={{ height: 40 }}
-      >
-        <Button
-          variant="contained"
-          onClick={handlePreviousPage}
-          disabled={currentPage === 0 || isLoading} // Disable while loading
+      {totalPages > 1 ? (
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          mt={2}
+          sx={{ height: 40 }}
         >
-          Previous
-        </Button>
-        <Typography variant="h6">
-          Page {currentPage + 1} of {totalPages}
-        </Typography>
-        <Button
-          variant="contained"
-          onClick={handleNextPage}
-          disabled={currentPage >= totalPages - 1 || isLoading} // Disable while loading
-        >
-          Next
-        </Button>
-      </Box>
+          <Button
+            variant="contained"
+            onClick={handlePreviousPage}
+            disabled={currentPage === 0 || isLoading} // Disable while loading
+          >
+            Previous
+          </Button>
+          <Typography variant="h6">
+            Page {currentPage + 1} of {totalPages}
+          </Typography>
+          <Button
+            variant="contained"
+            onClick={handleNextPage}
+            disabled={currentPage >= totalPages - 1 || isLoading} // Disable while loading
+          >
+            Next
+          </Button>
+        </Box>
+      ) : (
+        <></>
+      )}
     </div>
   );
 };

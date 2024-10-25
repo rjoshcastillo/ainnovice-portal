@@ -13,9 +13,36 @@ import { useUser } from "../../context/UserContext";
 import PatientConcerns from "./molecules/PatientConcerns";
 import ScheduleSelector from "./molecules/ScheduleSelector";
 import SpecialistDetails from "./molecules/SpecialistDetails";
+import Appointment from "../../services/appointment.services";
+import Prediction from "../../services/prediction.services";
+import {
+  getDayFromDate,
+  timeToMinutes,
+  toIsoDateString,
+} from "../../utils/helper";
+import { useNavigate } from "react-router-dom";
 
+const findAvailableSlot = (availableSlots, duration) => {
+  for (let i = 0; i <= availableSlots.length; i++) {
+    const startTime = availableSlots[i].start;
+    const endTime = timeToMinutes(startTime) + Math.ceil(duration / 10) * 10;
+
+    let hours = Math.floor(endTime / 60);
+    let minutes = endTime % 60;
+
+    let formattedTime = `${hours}:${minutes.toString().padStart(2, "0")}`;
+
+    if (endTime) {
+      const start = startTime;
+      const end = formattedTime;
+      return { start, end };
+    }
+  }
+
+  return null;
+};
 const AppointmentForm = () => {
-  const { user } = useUser();
+  const { user, updateAppLoadingState } = useUser();
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState({});
   const [formSteps, setFormSteps] = useState([
@@ -24,6 +51,8 @@ const AppointmentForm = () => {
     { label: "Select a Date", canProceed: false },
     { label: "Choose your Doctor", canProceed: false },
   ]);
+
+  const navigate = useNavigate();
 
   const updateFormData = (newData) => {
     setFormData((prevData) => ({
@@ -46,11 +75,121 @@ const AppointmentForm = () => {
       )
     );
   };
-  const handleNext = () => {
+  const checkDocAvailability = async (data) => {
+    try {
+      const payload = {
+        doctor_id: data?.doctor_id,
+        appointment_date: toIsoDateString(data?.appointment_date),
+        preferredTime: data?.amPm,
+      };
+      return await Appointment.checkDocAvailability(payload);
+    } catch (error) {
+      console.log(error);
+      throw new Error("Failed to check doctor availability");
+    }
+  };
 
+  const getAppntDurationEstimate = async (data) => {
+    const payload = {
+      age: user?.age,
+      gender: user?.gender,
+      reason_for_visit: data?.medicalConcern,
+      day_of_week: getDayFromDate(data?.appointment_date),
+    };
+    try {
+      return await Prediction.appointmentDurationEstimate(payload);
+    } catch (error) {
+      console.log(error);
+      throw new Error("Failed to estimate appointment duration");
+    }
+  };
+
+  const getAppntUrgency = async (data) => {
+    const payload = {
+      age: user?.age,
+      gender: user?.gender,
+      employed: user?.employed,
+      alcohol_consumption: data?.alcoholConsumption,
+      smoking: data?.smoking,
+      height: data?.height,
+      weight: data?.weight,
+      breathing_trouble: data?.breathingTrouble,
+      pain_level: String(data?.painLevel),
+      pain_part: data?.painPart,
+      medical_concern: data?.medicalConcern,
+      symptoms: data?.symptoms,
+      temperature: data?.temperature,
+    };
+    try {
+      return await Prediction.urgencyPrediction(payload);
+    } catch (error) {
+      console.log(error);
+      throw new Error("Failed to predict appointment urgency");
+    }
+  };
+
+  const saveAppointment = async (payload) => {
+    try {
+      return await Appointment.saveAppointment(payload);
+    } catch (error) {
+      console.log(error);
+      throw new Error("Failed to save appointment");
+    }
+  };
+
+  const processSavingAppointment = async (data) => {
+    updateAppLoadingState(true);
+    try {
+      const avl = await checkDocAvailability(data);
+
+      if (avl.availableSlots.length === 0) {
+        console.log("No available slot");
+        return;
+      }
+
+      const [est, urgency] = await Promise.all([
+        getAppntDurationEstimate(data),
+        getAppntUrgency(data),
+      ]);
+
+      const foundSlot = findAvailableSlot(avl.availableSlots, est.data);
+      console.log(foundSlot);
+
+      if (!foundSlot) {
+        console.log("No suitable time slot found");
+        return;
+      }
+
+      setFormData((prevFormData) => {
+        const newFormData = {
+          ...prevFormData,
+          appointment_start: foundSlot.start,
+          appointment_end: foundSlot.end,
+          urgency: urgency.data,
+          status: "Waiting",
+        };
+
+        saveAppointment(newFormData)
+          .then((sa) => {
+            return {};
+          })
+          .catch((error) => {
+            console.error("Error saving appointment:", error);
+            return prevFormData;
+          })
+          .finally(() => {
+            navigate("/");
+            updateAppLoadingState(false);
+          });
+      });
+    } catch (error) {
+      console.error("Error processing appointment:", error);
+    }
+  };
+
+  const handleNext = () => {
     if (activeStep === formSteps.length - 1) {
-      console.log(formData);
-      
+      processSavingAppointment(formData);
     } else {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     }

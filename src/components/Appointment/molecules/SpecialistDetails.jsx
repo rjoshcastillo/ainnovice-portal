@@ -1,20 +1,36 @@
-import { Card, CardContent, Typography, Avatar, Box } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  Typography,
+  Avatar,
+  Box,
+  Skeleton,
+  CircularProgress,
+} from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import { useEffect, useState } from "react";
 import { useUser } from "../../../context/UserContext";
+import Assistnat from "../../../services/assistant.services";
 
 const SpecialistDetails = ({ data, callBack, canProceed }) => {
   const [selectedDoctor, setSelectedDoctor] = useState({});
   const { doctorsList } = useUser();
   const [filteredDoctors, setFilteredDoctors] = useState([]);
+  const [cardLoader, setCardLoader] = useState(false);
+  const [specialization, setSpecialization] = useState(null);
 
   const handleCardClick = (selected) => {
     setSelectedDoctor({
       doctor_id: selected.doctor_id,
+      specialtyDoctor: selected.specialty,
     });
-    callBack({ doctor_id: selected.doctor_id });
+    callBack({
+      doctor_id: selected.doctor_id,
+      specialtyDoctor: selected.specialty,
+    });
     checkIfCanProceed({
       doctor_id: selected.doctor_id,
+      specialtyDoctor: selected.specialty,
     });
   };
 
@@ -31,18 +47,40 @@ const SpecialistDetails = ({ data, callBack, canProceed }) => {
     return doctorsList.filter((doctor) => doctor.specialty === filter);
   };
 
+  const getSuggestedDoctor = async (medical_concern) => {
+    const payload = {
+      medical_concern: medical_concern,
+    };
+    return await Assistnat.getGeneralMedicalNeed(payload);
+  };
   useEffect(() => {
-    const filtered = filterDoctorBySpecialization(data?.specialtyDoctor);
-    setFilteredDoctors(filtered);
-    setSelectedDoctor({
-      doctor_id: null,
-    });
-    callBack({
-      doctor_id: null,
-    });
-    checkIfCanProceed({
-      doctor_id: null,
-    });
+    const resetDoctorSelection = () => {
+      const initialDoctorSelection = { doctor_id: null, specialtyDoctor: "" };
+      setSelectedDoctor(initialDoctorSelection);
+      callBack(initialDoctorSelection);
+      checkIfCanProceed(initialDoctorSelection);
+    };
+
+    const fetchAndFilterDoctors = async () => {
+      setCardLoader(true);
+
+      const doctorSpecialization = data?.knowADoctor
+        ? data.specialtyDoctor
+        : (await getSuggestedDoctor(data?.medicalConcern)).data
+            ?.medical_field_needed?.name;
+      setSpecialization(doctorSpecialization);
+
+      if (doctorSpecialization) {
+        const filteredDoctors =
+          filterDoctorBySpecialization(doctorSpecialization);
+        setFilteredDoctors(filteredDoctors);
+      }
+
+      setCardLoader(false);
+    };
+
+    fetchAndFilterDoctors();
+    resetDoctorSelection();
   }, []);
 
   return (
@@ -51,7 +89,8 @@ const SpecialistDetails = ({ data, callBack, canProceed }) => {
         <Typography>Base on the doctor's specialty you selected</Typography>
       ) : (
         <Typography>
-          Based on your medical concern, our AI suggests consulting with...
+          Based on your medical concern, our AI suggests consulting with a{" "}
+          {cardLoader ? "..." : <strong>{specialization}</strong>}
         </Typography>
       )}
       <Grid
@@ -59,60 +98,73 @@ const SpecialistDetails = ({ data, callBack, canProceed }) => {
         container
         sx={{ gap: 2, maxHeight: 450, overflow: "scroll", padding: "2px" }}
       >
-        {filteredDoctors.map((doctor, index) => (
-          <Card
-            key={index}
-            onClick={() => handleCardClick(doctor)}
-            elevation={3}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              borderRadius: 2,
-              cursor: "pointer",
-              transition: "background-color 0.3s ease",
-              backgroundColor:
-                selectedDoctor?.doctor_id === doctor.doctor_id
-                  ? "primary.main"
-                  : "background.paper",
-              color:
-                selectedDoctor?.doctor_id === doctor.doctor_id
-                  ? "background.paper"
-                  : "primary.main",
-              width: "45%",
-              height: 90,
-            }}
+        {cardLoader ? (
+          <Box
+            sx={{ display: "flex", justifyContent: "center", width: "100%" }}
           >
-            <Box sx={{ ml: 2 }}>
-              <Avatar />
-            </Box>
-            <CardContent sx={{ flex: 1, position: "relative" }}>
-              <Typography variant="span" sx={{ fontWeight: 600 }}>
-                {doctor.name}
-              </Typography>
-              <Typography variant="body2" sx={{ fontSize: 12 }}>
-                {doctor.specialty}
-              </Typography>
-              <Box
-                sx={{
-                  position: "absolute",
-                  right: 16,
-                  color:
-                    selectedDoctor?.doctor_id === doctor.doctor_id
-                      ? "white"
-                      : "primary.main",
-                  cursor: "pointer",
-                  "&:hover": {
-                    textDecoration: "underline",
-                  },
-                }}
-              >
-                <Typography variant="body2">
-                  View
-                </Typography>
+            <CircularProgress />
+          </Box>
+        ) : filteredDoctors.length < 1 ? (
+          <Typography
+            variant="body2"
+            sx={{ color: "gray", textAlign: "center", width: "100%" }}
+          >
+            No records found
+          </Typography>
+        ) : (
+          filteredDoctors.map((doctor, index) => (
+            <Card
+              key={index}
+              onClick={() => handleCardClick(doctor)}
+              elevation={3}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                borderRadius: 2,
+                cursor: "pointer",
+                transition: "background-color 0.3s ease",
+                backgroundColor:
+                  selectedDoctor?.doctor_id === doctor.doctor_id
+                    ? "primary.main"
+                    : "background.paper",
+                color:
+                  selectedDoctor?.doctor_id === doctor.doctor_id
+                    ? "background.paper"
+                    : "primary.main",
+                width: "45%",
+                height: 90,
+              }}
+            >
+              <Box sx={{ ml: 2 }}>
+                <Avatar />
               </Box>
-            </CardContent>
-          </Card>
-        ))}
+              <CardContent sx={{ flex: 1, position: "relative" }}>
+                <Typography variant="span" sx={{ fontWeight: 600 }}>
+                  {doctor.name}
+                </Typography>
+                <Typography variant="body2" sx={{ fontSize: 12 }}>
+                  {doctor.specialty}
+                </Typography>
+                <Box
+                  sx={{
+                    position: "absolute",
+                    right: 16,
+                    color:
+                      selectedDoctor?.doctor_id === doctor.doctor_id
+                        ? "white"
+                        : "primary.main",
+                    cursor: "pointer",
+                    "&:hover": {
+                      textDecoration: "underline",
+                    },
+                  }}
+                >
+                  <Typography variant="body2">View</Typography>
+                </Box>
+              </CardContent>
+            </Card>
+          ))
+        )}
       </Grid>
     </Box>
   );

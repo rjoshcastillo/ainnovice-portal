@@ -16,6 +16,9 @@ const ScheduleSelector = ({ data, callBack, canProceed }) => {
   const [scheduleData, setScheduleData] = useState({});
   const debounceTimeout = useRef(null);
 
+  const tomorrow = new Date();
+  tomorrow.setDate(new Date().getDate() + 1); 
+
   const onChange = (e, newValue = null, inputType = "input") => {
     let name, value;
 
@@ -23,7 +26,7 @@ const ScheduleSelector = ({ data, callBack, canProceed }) => {
       name = e.target.name;
       value = e.target.value;
     } else if (inputType === "date") {
-      name = "appointmentDate";
+      name = "appointment_date";
       value = newValue;
     }
     setScheduleData((prevDetails) => {
@@ -52,7 +55,7 @@ const ScheduleSelector = ({ data, callBack, canProceed }) => {
   useEffect(() => {
     if (data) {
       setScheduleData({
-        appointmentDate: data?.appointmentDate || null,
+        appointment_date: data?.appointment_date ? new Date(data.appointment_date) : null,
         amPm: data?.amPm || "AM",
       });
     }
@@ -72,8 +75,9 @@ const ScheduleSelector = ({ data, callBack, canProceed }) => {
           <MobileDatePicker
             sx={{ width: "100%" }}
             label="Appointment Date"
-            value={scheduleData.appointmentDate || null}
+            value={scheduleData.appointment_date || null}
             onChange={(newDate) => onChange(null, newDate, "date")}
+            minDate={tomorrow}
             renderInput={(props) => <TextField {...props} />}
           />
         </LocalizationProvider>

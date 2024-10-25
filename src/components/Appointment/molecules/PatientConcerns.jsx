@@ -11,6 +11,7 @@ import {
   Select,
   Box,
   Slider,
+  Chip,
 } from "@mui/material";
 import Doctor from "../../../services/doctor.services";
 import { useUser } from "../../../context/UserContext";
@@ -20,8 +21,8 @@ import moment from "moment";
 
 const PatientConcerns = ({ data, callBack, canProceed }) => {
   const [patientConcerns, setPatientConcerns] = useState({});
+  const [symptomChips, setSymptomChips] = useState([]);
   const { doctorsList, updateDoctorsList } = useUser();
-
   const debounceTimeout = useRef(null);
 
   const onChange = (e, newValue = null, inputType = "input") => {
@@ -33,6 +34,11 @@ const PatientConcerns = ({ data, callBack, canProceed }) => {
         name === "knowADoctor" || name === "breathingTrouble"
           ? e.target.value === "true"
           : e.target.value;
+
+      if (name === "symptoms") {
+        const symptomsArray = value.split(",").map((s) => s.trim());
+        setSymptomChips(symptomsArray);
+      }
     } else if (inputType === "slider") {
       name = "painLevel";
       value = newValue;
@@ -58,17 +64,12 @@ const PatientConcerns = ({ data, callBack, canProceed }) => {
   };
 
   const checkIfCanProceed = (details) => {
-    // Check all other values, ignoring specialtyDoctor if knowADoctor is false
     let hasValue = Object.entries(details).every(([key, value]) => {
-      // Ignore specialtyDoctor if knowADoctor is false
       if (key === "specialtyDoctor" && !details.knowADoctor) {
-        return true; // Skip the check for specialtyDoctor
+        return true;
       }
-
-      // Check for empty, null, or undefined values
       return value !== "" && value !== null && value !== undefined;
     });
-
     canProceed(hasValue);
   };
 
@@ -231,6 +232,21 @@ const PatientConcerns = ({ data, callBack, canProceed }) => {
         onChange={onChange}
       />
 
+      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 4 }}>
+        {symptomChips.filter(symptom => symptom !== "").map((symptom, index) => (
+          <Chip
+            key={index}
+            label={symptom}
+            sx={{
+              backgroundColor: "#f0f0f0",
+              borderRadius: "16px",
+              padding: "4px 8px",
+              fontSize: "0.9rem",
+            }}
+          />
+        ))}
+      </Box>
+
       <Box
         sx={{
           display: "flex",
@@ -244,6 +260,7 @@ const PatientConcerns = ({ data, callBack, canProceed }) => {
             label="Medical Concern Start Date"
             value={patientConcerns.medicalConcernStart || null}
             onChange={(newDate) => onChange(null, newDate, "date")}
+            maxDate={new Date()}
             renderInput={(props) => <TextField {...props} />}
           />
         </LocalizationProvider>
