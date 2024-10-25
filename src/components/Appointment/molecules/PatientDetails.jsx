@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   TextField,
   MenuItem,
@@ -12,32 +12,73 @@ import {
   Box,
 } from "@mui/material";
 
-const PatientDetails = ({ user, data, callBack }) => {
+const PatientDetails = ({ user, data, callBack, canProceed }) => {
   const [patientDetails, setPatientDetails] = useState({});
 
-  const onChange = (e) => {
-    const { name, value } = e.target;
-    const newValue =
-      name === "employed" || name === "smoking" ? value === "true" : value;
-    setPatientDetails({ ...patientDetails, [name]: newValue });
-    callBack({ ...patientDetails, [name]: newValue });
+  const debounceTimeout = useRef(null);
+
+  const onChange = (e, newValue = null, inputType = "input") => {
+    let name, value;
+
+
+    if (inputType === "input") {
+      name = e.target.name;
+      value =
+        name === "employed" || name === "smoking"
+          ? e.target.value === "true"
+          : e.target.value;
+    } else if (inputType === "someType") {
+      name = "someName";
+      value = newValue;
+    }
+
+    setPatientDetails((prevDetails) => {
+      const updatedDetails = { ...prevDetails, [name]: value };
+
+      if (debounceTimeout.current) {
+        clearTimeout(debounceTimeout.current);
+      }
+
+      debounceTimeout.current = setTimeout(() => {
+        callBack(updatedDetails);
+        checkIfCanProceed(updatedDetails);
+      }, 200);
+
+      return updatedDetails;
+    });
+  };
+
+  const checkIfCanProceed = (details) => {
+    const hasValue = Object.values(details).every(
+      (value) => value !== "" && value !== null && value !== undefined
+    );
+
+    canProceed(hasValue);
   };
 
   useEffect(() => {
     if (user) {
       setPatientDetails({
-        accountId: user.account_id || "",
+        account_id: user.account_id || null,
         fullName: user.fullname || "",
         gender: user.gender || "",
         employed: user.employed || false,
         jobDescription: user.jobDescription || "",
         alcoholConsumption: data?.alcoholConsumption || "None",
-        smoking: data?.smoking || false, 
-        height: data?.height || "", 
-        weight: data?.weight || "", 
+        smoking: data?.smoking || false,
+        height: data?.height || "",
+        weight: data?.weight || "",
       });
     }
-  }, [user, data]); 
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (debounceTimeout.current) {
+        clearTimeout(debounceTimeout.current);
+      }
+    };
+  }, []);
 
   return (
     <Box>
@@ -141,7 +182,7 @@ const PatientDetails = ({ user, data, callBack }) => {
           margin="normal"
           name="height"
           type="number"
-          value={patientDetails.height || ""} 
+          value={patientDetails.height || ""}
           onChange={onChange}
           sx={{ flex: 1 }}
         />
@@ -152,7 +193,7 @@ const PatientDetails = ({ user, data, callBack }) => {
           margin="normal"
           name="weight"
           type="number"
-          value={patientDetails.weight || ""} 
+          value={patientDetails.weight || ""}
           onChange={onChange}
           sx={{ flex: 1 }}
         />

@@ -10,12 +10,13 @@ import Login from "./pages/Login/Login";
 import Home from "./pages/Home/Home";
 import "./App.css";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import CssBaseline from '@mui/material/CssBaseline';
+import CssBaseline from "@mui/material/CssBaseline";
 import Appointment from "./pages/Appointment/Appointment";
 import AppNavBar from "./components/AppNavBar";
 import { useUser } from "./context/UserContext";
 import Admin from "./pages/Admin/Admin";
 import Patient from "./pages/Patient/Patient";
+import { Box, CircularProgress } from "@mui/material";
 
 const theme = createTheme({
   palette: {
@@ -30,7 +31,7 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: 'Poppins, sans-serif',
+    fontFamily: "Poppins, sans-serif",
   },
 });
 function ProtectedRoute({ children }) {
@@ -74,10 +75,30 @@ const LoginRouteGuard = ({ children }) => {
 
 function AppWrapper() {
   const location = useLocation();
-
+  const { isAppLoading } = useUser();
   return (
     <>
-      {/* Conditionally render AppNavBar if the route is not '/login' */}
+      <Box></Box>
+      {isAppLoading ? (
+        <Box
+          sx={{
+            position: "fixed", // Fixed positioning
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(255, 255, 255, 0.1)", // White background with lower opacity
+            backdropFilter: "blur(5px)", // Optional: Adds a blur effect to the background
+            zIndex: 1000, // Ensure it appears above other elements
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      ) : null}
+
       {location.pathname !== "/login" && <AppNavBar />}
 
       <Routes>

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-
   Button,
   Box,
   Stepper,
@@ -13,47 +12,188 @@ import PatientDetails from "./molecules/PatientDetails";
 import { useUser } from "../../context/UserContext";
 import PatientConcerns from "./molecules/PatientConcerns";
 import ScheduleSelector from "./molecules/ScheduleSelector";
+import SpecialistDetails from "./molecules/SpecialistDetails";
+import Appointment from "../../services/appointment.services";
+import Prediction from "../../services/prediction.services";
+import {
+  getDayFromDate,
+  timeToMinutes,
+  toIsoDateString,
+} from "../../utils/helper";
+import { useNavigate } from "react-router-dom";
 
+const findAvailableSlot = (availableSlots, duration) => {
+  for (let i = 0; i <= availableSlots.length; i++) {
+    const startTime = availableSlots[i].start;
+    const endTime = timeToMinutes(startTime) + Math.ceil(duration / 10) * 10;
+
+    let hours = Math.floor(endTime / 60);
+    let minutes = endTime % 60;
+
+    let formattedTime = `${hours}:${minutes.toString().padStart(2, "0")}`;
+
+    if (endTime) {
+      const start = startTime;
+      const end = formattedTime;
+      return { start, end };
+    }
+  }
+
+  return null;
+};
 const AppointmentForm = () => {
-  const { user } = useUser();
+  const { user, updateAppLoadingState } = useUser();
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState({});
-  const formSteps = [
-    { label: "Patient Details" },
-    { label: "Describe Concern" },
-    { label: "Select a Date" },
-  ];
+  const [formSteps, setFormSteps] = useState([
+    { label: "Patient Details", canProceed: false },
+    { label: "Describe Concern", canProceed: false },
+    { label: "Select a Date", canProceed: false },
+    { label: "Choose your Doctor", canProceed: false },
+  ]);
 
-  const getPatientDetails = (patientDetails) => {
-    setFormData({
-      ...formData,
-      ...patientDetails
-    })
+  const navigate = useNavigate();
+
+  const updateFormData = (newData) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      ...newData,
+    }));
   };
 
-  const getPatientConcerns = (patientConcerns) => {
-    setFormData({
-      ...formData,
-      ...patientConcerns
-    })
+  const getPatientDetails = (patientDetails) => updateFormData(patientDetails);
+  const getPatientConcerns = (patientConcerns) =>
+    updateFormData(patientConcerns);
+  const getPatientScheduleDate = (scheduleDate) => updateFormData(scheduleDate);
+  const getSpecialistDetails = (specialistDetails) =>
+    updateFormData(specialistDetails);
+
+  const updateStepCanProceed = (index, canProceedValue) => {
+    setFormSteps((prevSteps) =>
+      prevSteps.map((step, i) =>
+        i === index ? { ...step, canProceed: canProceedValue } : step
+      )
+    );
+  };
+  const checkDocAvailability = async (data) => {
+    try {
+      const payload = {
+        doctor_id: data?.doctor_id,
+        appointment_date: toIsoDateString(data?.appointment_date),
+        preferredTime: data?.amPm,
+      };
+      return await Appointment.checkDocAvailability(payload);
+    } catch (error) {
+      console.log(error);
+      throw new Error("Failed to check doctor availability");
+    }
   };
 
-  const getPatientScheduleDate = (scheduleDate) => {
-    setFormData({
-      ...formData,
-      ...scheduleDate
-    })
+  const getAppntDurationEstimate = async (data) => {
+    const payload = {
+      age: user?.age,
+      gender: user?.gender,
+      reason_for_visit: data?.medicalConcern,
+      day_of_week: getDayFromDate(data?.appointment_date),
+    };
+    try {
+      return await Prediction.appointmentDurationEstimate(payload);
+    } catch (error) {
+      console.log(error);
+      throw new Error("Failed to estimate appointment duration");
+    }
+  };
+
+  const getAppntUrgency = async (data) => {
+    const payload = {
+      age: user?.age,
+      gender: user?.gender,
+      employed: user?.employed,
+      alcohol_consumption: data?.alcoholConsumption,
+      smoking: data?.smoking,
+      height: data?.height,
+      weight: data?.weight,
+      breathing_trouble: data?.breathingTrouble,
+      pain_level: String(data?.painLevel),
+      pain_part: data?.painPart,
+      medical_concern: data?.medicalConcern,
+      symptoms: data?.symptoms,
+      temperature: data?.temperature,
+    };
+    try {
+      return await Prediction.urgencyPrediction(payload);
+    } catch (error) {
+      console.log(error);
+      throw new Error("Failed to predict appointment urgency");
+    }
+  };
+
+  const saveAppointment = async (payload) => {
+    try {
+      return await Appointment.saveAppointment(payload);
+    } catch (error) {
+      console.log(error);
+      throw new Error("Failed to save appointment");
+    }
+  };
+
+  const processSavingAppointment = async (data) => {
+    updateAppLoadingState(true);
+    try {
+      const avl = await checkDocAvailability(data);
+
+      if (avl.availableSlots.length === 0) {
+        console.log("No available slot");
+        return;
+      }
+
+      const [est, urgency] = await Promise.all([
+        getAppntDurationEstimate(data),
+        getAppntUrgency(data),
+      ]);
+
+      const foundSlot = findAvailableSlot(avl.availableSlots, est.data);
+      console.log(foundSlot);
+
+      if (!foundSlot) {
+        console.log("No suitable time slot found");
+        return;
+      }
+
+      setFormData((prevFormData) => {
+        const newFormData = {
+          ...prevFormData,
+          appointment_start: foundSlot.start,
+          appointment_end: foundSlot.end,
+          urgency: urgency.data,
+          status: "Waiting",
+        };
+
+        saveAppointment(newFormData)
+          .then((sa) => {
+            return {};
+          })
+          .catch((error) => {
+            console.error("Error saving appointment:", error);
+            return prevFormData;
+          })
+          .finally(() => {
+            navigate("/");
+            updateAppLoadingState(false);
+          });
+      });
+    } catch (error) {
+      console.error("Error processing appointment:", error);
+    }
   };
 
   const handleNext = () => {
     if (activeStep === formSteps.length - 1) {
-      console.log(formData);
-      /* Process saving to database */
+      processSavingAppointment(formData);
     } else {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     }
   };
-
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
@@ -74,14 +214,44 @@ const AppointmentForm = () => {
             </StepLabel>
             <StepContent>
               {index === 0 ? (
-                <PatientDetails user={user} data={formData} callBack={getPatientDetails} />
+                <PatientDetails
+                  user={user}
+                  data={formData}
+                  callBack={getPatientDetails}
+                  canProceed={(canProceedValue) =>
+                    updateStepCanProceed(0, canProceedValue)
+                  }
+                />
               ) : index === 1 ? (
-                <PatientConcerns data={formData} callBack={getPatientConcerns} />
-              ) : index === 2 ? <ScheduleSelector data={formData} callBack={getPatientScheduleDate} /> : (
+                <PatientConcerns
+                  data={formData}
+                  callBack={getPatientConcerns}
+                  canProceed={(canProceedValue) =>
+                    updateStepCanProceed(1, canProceedValue)
+                  }
+                />
+              ) : index === 2 ? (
+                <ScheduleSelector
+                  data={formData}
+                  callBack={getPatientScheduleDate}
+                  canProceed={(canProceedValue) =>
+                    updateStepCanProceed(2, canProceedValue)
+                  }
+                />
+              ) : index === 3 ? (
+                <SpecialistDetails
+                  data={formData}
+                  callBack={getSpecialistDetails}
+                  canProceed={(canProceedValue) =>
+                    updateStepCanProceed(3, canProceedValue)
+                  }
+                />
+              ) : (
                 <></>
               )}
               <Box sx={{ mb: 2 }}>
                 <Button
+                  disabled={!step.canProceed}
                   variant="contained"
                   onClick={handleNext}
                   sx={{ mt: 1, mr: 1 }}

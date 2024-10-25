@@ -13,14 +13,14 @@ import AppointmentCard from "./AppointmentCard";
 const GridSkeleton = ({ count = 3, height = 150, marginTop = 0 }) => (
   <Grid
     sx={{
-      display: 'flex',
-      flexDirection: 'row',
-      justifyContent: 'space-between',
+      display: "flex",
+      flexDirection: "row",
+      justifyContent: "space-between",
       marginTop: `${marginTop}px`,
     }}
   >
     {Array.from({ length: count }).map((_, index) => (
-      <Box key={index} sx={{ width: '30%' }}>
+      <Box key={index} sx={{ width: "30%" }}>
         <Skeleton
           variant="rectangular"
           height={height}
@@ -49,7 +49,6 @@ const SkeletonLoader = () => (
     </Box>
   </Box>
 );
-
 
 const AppointmentList = ({
   appointments,
@@ -80,7 +79,7 @@ const AppointmentList = ({
   };
 
   return (
-    <div style={{ width: "100%", height: "400px", overflowY: "auto" }}>
+    <div style={{ width: "100%", height: "500px", overflowY: "auto" }}>
       {isLoading ? (
         // Show the SkeletonLoader if loading
         <SkeletonLoader />
@@ -112,27 +111,35 @@ const AppointmentList = ({
               <AppointmentCard {...appointment} />
             </Grid>
           ))}
-          {/* Pagination controls */}
-          <Box display="flex" justifyContent="space-between" mt={2}>
-            <Button
-              variant="contained"
-              onClick={handlePreviousPage}
-              disabled={currentPage === 0 || isLoading} // Disable while loading
-            >
-              Previous
-            </Button>
-            <Typography variant="h6">
-              Page {currentPage + 1} of {totalPages}
-            </Typography>
-            <Button
-              variant="contained"
-              onClick={handleNextPage}
-              disabled={currentPage >= totalPages - 1 || isLoading} // Disable while loading
-            >
-              Next
-            </Button>
-          </Box>
         </Grid>
+      )}
+      {totalPages > 1 ? (
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          mt={2}
+          sx={{ height: 40 }}
+        >
+          <Button
+            variant="contained"
+            onClick={handlePreviousPage}
+            disabled={currentPage === 0 || isLoading} // Disable while loading
+          >
+            Previous
+          </Button>
+          <Typography variant="h6">
+            Page {currentPage + 1} of {totalPages}
+          </Typography>
+          <Button
+            variant="contained"
+            onClick={handleNextPage}
+            disabled={currentPage >= totalPages - 1 || isLoading} // Disable while loading
+          >
+            Next
+          </Button>
+        </Box>
+      ) : (
+        <></>
       )}
     </div>
   );

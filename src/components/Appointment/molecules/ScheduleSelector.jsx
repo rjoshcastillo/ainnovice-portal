@@ -7,33 +7,67 @@ import {
   RadioGroup,
   TextField,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
 
-const ScheduleSelector = ({ data, callBack }) => {
+const ScheduleSelector = ({ data, callBack, canProceed }) => {
   const [scheduleData, setScheduleData] = useState({});
+  const debounceTimeout = useRef(null);
 
-  const handleDateChange = (newDate) => {
-    setScheduleData({ ...scheduleData, appointmentDate: newDate });
-    callBack({ ...scheduleData, appointmentDate: newDate });
+  const tomorrow = new Date();
+  tomorrow.setDate(new Date().getDate() + 1); 
+
+  const onChange = (e, newValue = null, inputType = "input") => {
+    let name, value;
+
+    if (inputType === "input") {
+      name = e.target.name;
+      value = e.target.value;
+    } else if (inputType === "date") {
+      name = "appointment_date";
+      value = newValue;
+    }
+    setScheduleData((prevDetails) => {
+      const updatedDetails = { ...prevDetails, [name]: value };
+
+      if (debounceTimeout.current) {
+        clearTimeout(debounceTimeout.current);
+      }
+
+      debounceTimeout.current = setTimeout(() => {
+        callBack(updatedDetails);
+        checkIfCanProceed(updatedDetails);
+      }, 200);
+
+      return updatedDetails;
+    });
   };
 
-  const onChange = (e) => {
-    const { name, value } = e.target;
-    setScheduleData({ ...scheduleData, [name]: value });
-    callBack({ ...scheduleData, [name]: value });
+  const checkIfCanProceed = (details) => {
+    const hasValue = Object.values(details).every(
+      (value) => value !== "" && value !== null && value !== undefined
+    );
+
+    canProceed(hasValue);
   };
+  useEffect(() => {
+    if (data) {
+      setScheduleData({
+        appointment_date: data?.appointment_date ? new Date(data.appointment_date) : null,
+        amPm: data?.amPm || "AM",
+      });
+    }
+  }, []);
 
   useEffect(() => {
-    if(data) {
-      setScheduleData({
-        appointmentDate: data?.appointmentDate || null,
-        amPm: data?.amPm || ""
-      })
-    }
-  },[data])
+    return () => {
+      if (debounceTimeout.current) {
+        clearTimeout(debounceTimeout.current);
+      }
+    };
+  }, []);
   return (
     <Box sx={{ my: 1 }}>
       <Box sx={{ display: "flex", alignItems: "center", gap: 4 }}>
@@ -41,14 +75,17 @@ const ScheduleSelector = ({ data, callBack }) => {
           <MobileDatePicker
             sx={{ width: "100%" }}
             label="Appointment Date"
-            value={scheduleData.appointmentDate || null}
-            onChange={handleDateChange}
+            value={scheduleData.appointment_date || null}
+            onChange={(newDate) => onChange(null, newDate, "date")}
+            minDate={tomorrow}
             renderInput={(props) => <TextField {...props} />}
           />
         </LocalizationProvider>
       </Box>
       <FormControl component="fieldset" margin="normal" sx={{ flex: 1 }}>
-        <FormLabel component="legend">Preffered Time</FormLabel>
+        <FormLabel component="legend">
+          Preferred Time (AI will decide the best time for you)
+        </FormLabel>
         <RadioGroup
           name="amPm"
           value={String(scheduleData.amPm)}
@@ -56,12 +93,12 @@ const ScheduleSelector = ({ data, callBack }) => {
           row
         >
           <FormControlLabel
-            value="Morning"
+            value="AM"
             control={<Radio />}
             label="Morning"
           />
           <FormControlLabel
-            value="Afternoon"
+            value="PM"
             control={<Radio />}
             label="Afternoon"
           />

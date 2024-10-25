@@ -4,12 +4,13 @@ const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
   const [doctorsList, setDoctorsList] = useState([]);
+  const [isAppLoading, setIsAppLoading] = useState(false);
   const [user, setUser] = useState({
     fullname: "",
     age: "",
     jobDescription: "",
     employed: false,
-    account_id: "",
+    account_id: null,
     gender: "",
     email: "",
     contactNumber: "",
@@ -29,6 +30,10 @@ export const UserProvider = ({ children }) => {
     setDoctorsList(doctorsList); // Update doctors list state
   };
 
+  const updateAppLoadingState = (state) => {
+    setIsAppLoading(state);
+  }
+
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("userInfo"));
     if (storedUser) {
@@ -42,7 +47,7 @@ export const UserProvider = ({ children }) => {
 
   return (
     <UserContext.Provider
-      value={{ user, logout, updateUser, doctorsList, updateDoctorsList }}
+      value={{ user, logout, updateUser, doctorsList, updateDoctorsList, isAppLoading, updateAppLoadingState }}
     >
       {children}
     </UserContext.Provider>
