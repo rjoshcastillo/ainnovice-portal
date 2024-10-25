@@ -15,7 +15,6 @@ export const UserProvider = ({ children }) => {
     contactNumber: "",
     isLogin: false,
     type: "",
-    id: 0
   });
 
   const updateUser = (userData) => {
