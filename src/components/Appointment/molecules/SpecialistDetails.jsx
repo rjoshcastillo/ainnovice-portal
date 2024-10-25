@@ -4,13 +4,12 @@ import {
   Typography,
   Avatar,
   Box,
-  Skeleton,
   CircularProgress,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import { useEffect, useState } from "react";
 import { useUser } from "../../../context/UserContext";
-import Assistnat from "../../../services/assistant.services";
+import Assistant from "../../../services/assistant.services";
 
 const SpecialistDetails = ({ data, callBack, canProceed }) => {
   const [selectedDoctor, setSelectedDoctor] = useState({});
@@ -51,7 +50,7 @@ const SpecialistDetails = ({ data, callBack, canProceed }) => {
     const payload = {
       medical_concern: medical_concern,
     };
-    return await Assistnat.getGeneralMedicalNeed(payload);
+    return await Assistant.getGeneralMedicalNeed(payload);
   };
   useEffect(() => {
     const resetDoctorSelection = () => {

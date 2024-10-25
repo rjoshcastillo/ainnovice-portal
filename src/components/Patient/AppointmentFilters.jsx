@@ -6,16 +6,12 @@ import {
   IconButton,
   Select,
   MenuItem,
-  Typography,
 } from "@mui/material";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import SearchIcon from "@mui/icons-material/Search";
-import { useTheme } from "@mui/material/styles";
-import moment from "moment";
+import DateToday from "../common/DateToday";
 
 const AppointmentFilters = ({ searchQuery, onSearchChange, statusFilter, onStatusChange }) => {
-  const theme = useTheme();
-  const todayDate = moment().format("MMMM D, YYYY");
+
   return (
     <Box
       sx={{
@@ -49,14 +45,7 @@ const AppointmentFilters = ({ searchQuery, onSearchChange, statusFilter, onStatu
           <MenuItem value="Cancelled">Cancelled</MenuItem>
         </Select>
       </Box>
-      <Box display="flex" alignItems="center">
-        <CalendarTodayIcon
-          sx={{ marginRight: 1, color: theme.palette.primary.main }}
-        />
-        <Typography variant="body1" sx={{ color: "#000000", fontWeight: 700 }}>
-          Today, {todayDate}
-        </Typography>
-      </Box>
+      <DateToday/>
     </Box>
   );
 };

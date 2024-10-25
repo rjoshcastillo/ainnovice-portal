@@ -14,7 +14,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import Appointment from "./pages/Appointment/Appointment";
 import AppNavBar from "./components/AppNavBar";
 import { useUser } from "./context/UserContext";
-import Admin from "./pages/Admin/Admin";
+import Doctor from "./pages/Doctor/Doctor";
 import Patient from "./pages/Patient/Patient";
 import { Box, CircularProgress } from "@mui/material";
 
@@ -29,11 +29,16 @@ const theme = createTheme({
     tertiary: {
       main: "#FFFF",
     },
+    background: {
+      default: '#EEEEEE',
+    },
+
   },
   typography: {
     fontFamily: "Poppins, sans-serif",
   },
 });
+
 function ProtectedRoute({ children }) {
   const { user } = useUser();
   if (!user.isLogin) {
@@ -50,7 +55,7 @@ const HomeRoute = () => {
     if (user?.type === "doctors") {
       return (
         <ProtectedRoute>
-          <Admin />
+          <Doctor />
         </ProtectedRoute>
       );
     } else if (user?.type === "patients") {

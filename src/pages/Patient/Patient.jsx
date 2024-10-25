@@ -64,7 +64,7 @@ function Patient() {
         </Grid>
         <Box sx={{ width: "100%", typography: "body1" }}>
           <TabContext value={value}>
-            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+            <Card sx={{ borderColor: "divider" }}>
               <TabList
                 onChange={handleChange}
                 aria-label="lab API tabs example"
@@ -72,7 +72,7 @@ function Patient() {
                 <Tab label="My Details" value="1" />
                 <Tab label="Appointments" value="2" />
               </TabList>
-            </Box>
+            </Card>
             <TabPanel value="1" sx={{ px: 0}}><PatientDetails /></TabPanel>
             <TabPanel value="2" sx={{ px: 0}}><AppointmentDashboard/></TabPanel>
           </TabContext>
