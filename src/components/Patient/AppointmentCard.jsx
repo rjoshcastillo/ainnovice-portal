@@ -101,7 +101,7 @@ const AppointmentCard = ({
         >
           <CalendarTodayIcon fontSize="small" sx={{ mr: 0.5 }} />
           <Typography variant="body2" sx={{ mr: 2 }}>
-            {moment(appointment_date).format("MMMM D, YYYY")} 
+            {moment(appointment_date).format("MMM Do YY")} 
           </Typography>
           <AccessTimeIcon fontSize="small" sx={{ mr: 0.5 }} />
           <Typography variant="body2">{convertedStartTime}-{convertedEndTime} </Typography>

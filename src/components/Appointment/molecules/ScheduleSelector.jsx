@@ -8,6 +8,7 @@ import {
   TextField,
 } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import moment from 'moment';
 
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
@@ -86,19 +87,10 @@ const ScheduleSelector = ({ data, callBack, canProceed }) => {
           />
         </LocalizationProvider>
       </Box>
-      <FormControl component="fieldset" margin="normal" sx={{ flex: 1 }}>
-        <FormLabel component="legend">
-          Preferred Time (AI will decide the best time for you)
+      <FormControl component="fieldset" margin="normal" sx={{ flex: 1, }}>
+        <FormLabel component="legend" sx={{display: 'flex', alignItems: 'center'}}>
+           <InfoOutlinedIcon sx={{marginRight: '5px'}}/>Preferred Time (AI will decide the best time for you)
         </FormLabel>
-        <RadioGroup
-          name="amPm"
-          value={String(scheduleData.amPm)}
-          onChange={onChange}
-          row
-        >
-          <FormControlLabel value="AM" control={<Radio />} label="Morning" />
-          <FormControlLabel value="PM" control={<Radio />} label="Afternoon" />
-        </RadioGroup>
       </FormControl>
     </Box>
   );
