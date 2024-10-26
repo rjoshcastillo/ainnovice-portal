@@ -13,9 +13,12 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import { useUser } from "../../context/UserContext";
+import { useSnackbar } from '../../context/SnackbarProvider';
 
 function PatientDetails() {
   const { user } = useUser();
+
+ 
   return (
     <Box>
       <Card sx={{ padding: 4 }}>
@@ -33,7 +36,7 @@ function PatientDetails() {
             <TextField
               disabled
               id="outlined-disabled"
-              defaultValue={user?.fullname}
+              defaultValue={user?.fullName}
               label="Name"
             />
             <Box sx={{ display: "flex", gap: 2 }}>

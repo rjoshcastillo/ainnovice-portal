@@ -6,6 +6,7 @@ const statusColors = {
   Waiting: 'warning',
   Completed: 'success',
   Cancelled: 'error',
+  Urgent: 'error',
 };
 
 const StatusChip = ({ status }) => {
@@ -13,7 +14,6 @@ const StatusChip = ({ status }) => {
     <Chip
       label={status}
       color={statusColors[status] || 'default'}
-      sx={{ marginBottom: 2 }}
     />
   );
 };

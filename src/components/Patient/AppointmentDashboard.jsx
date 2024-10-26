@@ -19,7 +19,11 @@ const AppointmentDashboard = () => {
     const fetchAppointments = async () => {
       setIsLoading(true); // Set loading to true before fetching data
       try {
-        const res = await Appointment.getAppointment(user.account_id);
+        const params = {
+          id: user?.id,
+          type: user?.type,
+        };
+        const res = await Appointment.getAppointment(params);
         // Ensure appointments is always an array
         setAppointments(Array.isArray(res.data) ? res.data : []); // Use res.data based on your result structure
       } catch (error) {
@@ -29,7 +33,7 @@ const AppointmentDashboard = () => {
       }
     };
     fetchAppointments();
-  }, [user.account_id]); 
+  }, [user.id]);
 
   // Filter appointments based on searchQuery and statusFilter
   const filteredAppointments = appointments
@@ -67,14 +71,14 @@ const AppointmentDashboard = () => {
           statusFilter={statusFilter}
           onStatusChange={handleStatusChange}
         />
-          <AppointmentList
-            appointments={filteredAppointments}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-            itemsPerPage={itemsPerPage}
-            totalPages={totalPages}
-            isLoading={isLoading}
-          />
+        <AppointmentList
+          appointments={filteredAppointments}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+          itemsPerPage={itemsPerPage}
+          totalPages={totalPages}
+          isLoading={isLoading}
+        />
       </Card>
     </Box>
   );

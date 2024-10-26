@@ -20,15 +20,15 @@ const SpecialistDetails = ({ data, callBack, canProceed }) => {
 
   const handleCardClick = (selected) => {
     setSelectedDoctor({
-      doctor_id: selected.doctor_id,
+      doctorId: selected.doctor_id,
       specialtyDoctor: selected.specialty,
     });
     callBack({
-      doctor_id: selected.doctor_id,
+      doctorId: selected.doctor_id,
       specialtyDoctor: selected.specialty,
     });
     checkIfCanProceed({
-      doctor_id: selected.doctor_id,
+      doctorId: selected.doctor_id,
       specialtyDoctor: selected.specialty,
     });
   };
@@ -54,7 +54,7 @@ const SpecialistDetails = ({ data, callBack, canProceed }) => {
   };
   useEffect(() => {
     const resetDoctorSelection = () => {
-      const initialDoctorSelection = { doctor_id: null, specialtyDoctor: "" };
+      const initialDoctorSelection = { doctorId: null, specialtyDoctor: "" };
       setSelectedDoctor(initialDoctorSelection);
       callBack(initialDoctorSelection);
       checkIfCanProceed(initialDoctorSelection);
@@ -123,11 +123,11 @@ const SpecialistDetails = ({ data, callBack, canProceed }) => {
                 cursor: "pointer",
                 transition: "background-color 0.3s ease",
                 backgroundColor:
-                  selectedDoctor?.doctor_id === doctor.doctor_id
+                  selectedDoctor?.doctorId === doctor.doctor_id
                     ? "primary.main"
                     : "background.paper",
                 color:
-                  selectedDoctor?.doctor_id === doctor.doctor_id
+                  selectedDoctor?.doctorId === doctor.doctor_id
                     ? "background.paper"
                     : "primary.main",
                 width: "45%",
@@ -149,7 +149,7 @@ const SpecialistDetails = ({ data, callBack, canProceed }) => {
                     position: "absolute",
                     right: 16,
                     color:
-                      selectedDoctor?.doctor_id === doctor.doctor_id
+                      selectedDoctor?.doctorId === doctor.doctor_id
                         ? "white"
                         : "primary.main",
                     cursor: "pointer",

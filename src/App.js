@@ -17,6 +17,7 @@ import { useUser } from "./context/UserContext";
 import Doctor from "./pages/Doctor/Doctor";
 import Patient from "./pages/Patient/Patient";
 import { Box, CircularProgress } from "@mui/material";
+import SnackbarProvider from "./context/SnackbarProvider";
 
 const theme = createTheme({
   palette: {
@@ -30,9 +31,8 @@ const theme = createTheme({
       main: "#FFFF",
     },
     background: {
-      default: '#EEEEEE',
+      default: "#f5f5f5",
     },
-
   },
   typography: {
     fontFamily: "Poppins, sans-serif",
@@ -52,13 +52,13 @@ const HomeRoute = () => {
   if (!user?.isLogin) {
     return <Home />;
   } else {
-    if (user?.type === "doctors") {
+    if (user?.type === "doctor") {
       return (
         <ProtectedRoute>
           <Doctor />
         </ProtectedRoute>
       );
-    } else if (user?.type === "patients") {
+    } else if (user?.type === "patient") {
       return (
         <ProtectedRoute>
           <Patient />
@@ -132,12 +132,14 @@ function AppWrapper() {
 function App() {
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Router>
-        <div className="App">
-          <AppWrapper /> {/* Using AppWrapper to control navbar rendering */}
-        </div>
-      </Router>
+      <SnackbarProvider>
+        <CssBaseline />
+        <Router>
+          <div className="App">
+            <AppWrapper />
+          </div>
+        </Router>
+      </SnackbarProvider>
     </ThemeProvider>
   );
 }

@@ -104,7 +104,7 @@ function AppNavBar() {
               <>
                 <IconButton onClick={handleAvatarClick}>
                   <Avatar
-                    alt={user.fullname}
+                    alt={user.fullName}
                     src="/static/images/avatar/1.jpg"
                   />{" "}
                   {/* Placeholder Avatar */}

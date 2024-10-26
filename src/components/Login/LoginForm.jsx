@@ -29,11 +29,11 @@ const LoginForm = () => {
       if (response.status) {
         // Assuming the response has user data
         const userData = {
-          fullname: response.data.fullName,
+          fullName: response.data.full_name,
           age: response.data.age,
-          jobDescription: response.data.jobDescription,
+          jobDescription: response.data.job_description,
           employed: parseInt(response.data.employed) === 1 ? true : false,
-          account_id: response.data.accountId,
+          id: response.data.id,
           gender: response.data.gender,
           isLogin: true,
           email: response.data.email,
@@ -43,7 +43,6 @@ const LoginForm = () => {
 
         updateUser(userData); // Store user details in the context
         navigate("/");
-
       } else {
         setErrorMessage("Invalid email or password");
         updateUser({ isLogin: false });

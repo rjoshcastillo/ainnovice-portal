@@ -98,7 +98,7 @@ const Doctor = () => {
           mt: 8,
           mb: 2,
           p: 2,
-          backgroundImage: "linear-gradient(to right, teal, #EEEEEE)",
+          backgroundImage: "linear-gradient(to right, teal, #f5f5f5)",
         }}
       >
         <Box>
@@ -109,7 +109,7 @@ const Doctor = () => {
           alignItems="center"
         >
           <Typography variant="h4" sx={{ fontWeight: 600 }}>
-            Hi, Dr. {user?.fullname}, PhD
+            Hi, Dr. {user?.fullName}, PhD
           </Typography>
           <Typography component="p">How are you feeling today?</Typography>
         </Box>

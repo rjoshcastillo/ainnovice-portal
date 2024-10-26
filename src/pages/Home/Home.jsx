@@ -33,7 +33,7 @@ const Dashboard = () => {
         <Grid sx={{ padding: 4 }}>
           <Grid item xs={12} md={6}>
             <Typography variant="h4" component="h1" gutterBottom>
-              Welcome, {user.fullname}
+              Welcome, {user.fullName}
             </Typography>
             <Typography variant="body1" paragraph>
               At <strong>AINNovice</strong>, we are dedicated to revolutionizing your healthcare

@@ -8,6 +8,7 @@ import {
   TextField,
 } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
+import moment from 'moment';
 
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
@@ -17,7 +18,7 @@ const ScheduleSelector = ({ data, callBack, canProceed }) => {
   const debounceTimeout = useRef(null);
 
   const tomorrow = new Date();
-  tomorrow.setDate(new Date().getDate() + 1); 
+  tomorrow.setDate(new Date().getDate() + 1);
 
   const onChange = (e, newValue = null, inputType = "input") => {
     let name, value;
@@ -26,8 +27,8 @@ const ScheduleSelector = ({ data, callBack, canProceed }) => {
       name = e.target.name;
       value = e.target.value;
     } else if (inputType === "date") {
-      name = "appointment_date";
-      value = newValue;
+      name = "appointmentDate";
+      value = moment(newValue).format("YYYY-MM-DD");
     }
     setScheduleData((prevDetails) => {
       const updatedDetails = { ...prevDetails, [name]: value };
@@ -55,7 +56,9 @@ const ScheduleSelector = ({ data, callBack, canProceed }) => {
   useEffect(() => {
     if (data) {
       setScheduleData({
-        appointment_date: data?.appointment_date ? new Date(data.appointment_date) : null,
+        appointmentDate: data?.appointmentDate
+          ? new Date(data.appointmentDate)
+          : null,
         amPm: data?.amPm || "AM",
       });
     }
@@ -74,8 +77,9 @@ const ScheduleSelector = ({ data, callBack, canProceed }) => {
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <MobileDatePicker
             sx={{ width: "100%" }}
+            name="appointmentDate"
             label="Appointment Date"
-            value={scheduleData.appointment_date || null}
+            value={scheduleData.appointmentDate ? moment(scheduleData.appointmentDate).toDate() : null}
             onChange={(newDate) => onChange(null, newDate, "date")}
             minDate={tomorrow}
             renderInput={(props) => <TextField {...props} />}
@@ -92,16 +96,8 @@ const ScheduleSelector = ({ data, callBack, canProceed }) => {
           onChange={onChange}
           row
         >
-          <FormControlLabel
-            value="AM"
-            control={<Radio />}
-            label="Morning"
-          />
-          <FormControlLabel
-            value="PM"
-            control={<Radio />}
-            label="Afternoon"
-          />
+          <FormControlLabel value="AM" control={<Radio />} label="Morning" />
+          <FormControlLabel value="PM" control={<Radio />} label="Afternoon" />
         </RadioGroup>
       </FormControl>
     </Box>

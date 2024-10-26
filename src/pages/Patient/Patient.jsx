@@ -39,7 +39,7 @@ function Patient() {
             mt: 8,
             mb: 2,
             p: 2,
-            backgroundImage: "linear-gradient(to right, teal, white)",
+            backgroundImage: "linear-gradient(to right, teal, #f5f5f5)",
           }}
         >
           <Box>
@@ -54,7 +54,7 @@ function Patient() {
             alignItems="center"
           >
             <Typography variant="h4" sx={{ fontWeight: 600 }}>
-              Hi, {user?.fullname}
+              Hi, {user?.fullName}
             </Typography>
             <Typography component="p">How are you feeling today?</Typography>
             <Button onClick={handleBookAppointment} variant="contained" color="primary" style={{ padding: 12 }}>

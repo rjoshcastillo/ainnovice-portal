@@ -15,6 +15,7 @@ import ScheduleSelector from "./molecules/ScheduleSelector";
 import SpecialistDetails from "./molecules/SpecialistDetails";
 import Appointment from "../../services/appointment.services";
 import Prediction from "../../services/prediction.services";
+import { useSnackbar } from "../../context/SnackbarProvider";
 import {
   getDayFromDate,
   timeToMinutes,
@@ -45,6 +46,7 @@ const AppointmentForm = () => {
   const { user, updateAppLoadingState } = useUser();
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState({});
+  const openSnackbar = useSnackbar();
   const [formSteps, setFormSteps] = useState([
     { label: "Patient Details", canProceed: false },
     { label: "Describe Concern", canProceed: false },
@@ -75,19 +77,19 @@ const AppointmentForm = () => {
       )
     );
   };
-  const checkDocAvailability = async (data) => {
-    try {
-      const payload = {
-        doctor_id: data?.doctor_id,
-        appointment_date: toIsoDateString(data?.appointment_date),
-        preferredTime: data?.amPm,
-      };
-      return await Appointment.checkDocAvailability(payload);
-    } catch (error) {
-      console.log(error);
-      throw new Error("Failed to check doctor availability");
-    }
-  };
+  // const checkDocAvailability = async (data) => {
+  //   try {
+  //     const payload = {
+  //       doctor_id: data?.doctor_id,
+  //       appointment_date: toIsoDateString(data?.appointment_date),
+  //       preferredTime: data?.amPm,
+  //     };
+  //     return await Appointment.checkDocAvailability(payload);
+  //   } catch (error) {
+  //     console.log(error);
+  //     throw new Error("Failed to check doctor availability");
+  //   }
+  // };
 
   const getAppntDurationEstimate = async (data) => {
     const payload = {
@@ -140,50 +142,48 @@ const AppointmentForm = () => {
   const processSavingAppointment = async (data) => {
     updateAppLoadingState(true);
     try {
-      const avl = await checkDocAvailability(data);
-
-      if (avl.availableSlots.length === 0) {
-        console.log("No available slot");
-        return;
-      }
-
       const [est, urgency] = await Promise.all([
         getAppntDurationEstimate(data),
         getAppntUrgency(data),
       ]);
 
-      const foundSlot = findAvailableSlot(avl.availableSlots, est.data);
-      console.log(foundSlot);
-
-      if (!foundSlot) {
-        console.log("No suitable time slot found");
-        return;
-      }
-
       setFormData((prevFormData) => {
         const newFormData = {
           ...prevFormData,
-          appointment_start: foundSlot.start,
-          appointment_end: foundSlot.end,
           urgency: urgency.data,
+          estimate: est.data,
           status: "Waiting",
         };
 
         saveAppointment(newFormData)
           .then((sa) => {
-            return {};
+            openSnackbar(
+              "You're officially on the schedule. See you then!",
+              "success",
+              4000
+            );
+
+            navigate("/");
           })
           .catch((error) => {
-            console.error("Error saving appointment:", error);
-            return prevFormData;
+            openSnackbar(
+              "Oh no! An error occurred while booking your appointment.",
+              "error",
+              4000
+            );
           })
           .finally(() => {
-            navigate("/");
             updateAppLoadingState(false);
           });
+
+        return prevFormData;
       });
     } catch (error) {
-      console.error("Error processing appointment:", error);
+      openSnackbar(
+        "Oh no! An error occurred while booking your appointment.",
+        "error",
+        4000
+      );
     }
   };
 

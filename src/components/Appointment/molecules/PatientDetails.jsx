@@ -59,8 +59,8 @@ const PatientDetails = ({ user, data, callBack, canProceed }) => {
   useEffect(() => {
     if (user) {
       setPatientDetails({
-        account_id: user.account_id || null,
-        fullName: user.fullname || "",
+        patientId: user.id || null,
+        fullName: user.fullName || "",
         gender: user.gender || "",
         employed: user.employed || false,
         jobDescription: user.jobDescription || "",

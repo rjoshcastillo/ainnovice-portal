@@ -44,7 +44,7 @@ const PatientConcerns = ({ data, callBack, canProceed }) => {
       value = newValue;
     } else if (inputType === "date") {
       name = "medicalConcernStart";
-      value = newValue;
+      value = moment(newValue).format("YYYY-MM-DD");
     }
 
     setPatientConcerns((prevDetails) => {
@@ -233,18 +233,21 @@ const PatientConcerns = ({ data, callBack, canProceed }) => {
       />
 
       <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 4 }}>
-        {symptomChips.filter(symptom => symptom !== "").map((symptom, index) => (
-          <Chip
-            key={index}
-            label={symptom}
-            sx={{
-              backgroundColor: "#f0f0f0",
-              borderRadius: "16px",
-              padding: "4px 8px",
-              fontSize: "0.9rem",
-            }}
-          />
-        ))}
+        {symptomChips
+          .filter((symptom) => symptom !== "")
+          .map((symptom, index) => (
+            <Chip
+              key={index}
+              label={symptom}
+              sx={{
+                backgroundColor: "teal",
+                color: "white",
+                borderRadius: "16px",
+                padding: "4px 8px",
+                fontSize: "0.9rem",
+              }}
+            />
+          ))}
       </Box>
 
       <Box
@@ -258,7 +261,11 @@ const PatientConcerns = ({ data, callBack, canProceed }) => {
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <MobileDatePicker
             label="Medical Concern Start Date"
-            value={patientConcerns.medicalConcernStart || null}
+            value={
+              patientConcerns.medicalConcernStart
+                ? moment(patientConcerns.medicalConcernStart).toDate()
+                : null
+            }
             onChange={(newDate) => onChange(null, newDate, "date")}
             maxDate={new Date()}
             renderInput={(props) => <TextField {...props} />}

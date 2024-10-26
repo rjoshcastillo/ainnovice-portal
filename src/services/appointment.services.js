@@ -24,9 +24,10 @@ const checkDocAvailability = async (payload) => {
     throw error;
   }
 };
-const getAppointment = async (id) => {
+const getAppointment = async (params = {}) => {
   try {
-    const response = await axios.get(`${getAppointmentEndpoint}/${id}`);
+    const query = new URLSearchParams(params).toString();
+    const response = await axios.get(`${getAppointmentEndpoint}?${query}`);
     return response.data;
   } catch (error) {
     console.error("getAppointment error", error);

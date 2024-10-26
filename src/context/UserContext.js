@@ -6,11 +6,11 @@ export const UserProvider = ({ children }) => {
   const [doctorsList, setDoctorsList] = useState([]);
   const [isAppLoading, setIsAppLoading] = useState(false);
   const [user, setUser] = useState({
-    fullname: "",
+    fullName: "",
     age: "",
     jobDescription: "",
     employed: false,
-    account_id: null,
+    id: null,
     gender: "",
     email: "",
     contactNumber: "",
