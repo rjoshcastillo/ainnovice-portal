@@ -9,7 +9,7 @@ export const doctor = `${baseApi}/doctor`;
 export const appointment = `${baseApi}/appointment`;
 export const checkDoctorsAvailability = `${appointment}/available-doctor`
 export const saveAppointment = `${appointment}/appointment-settler`;
-export const getAppointment = `${appointment}/get`
+export const getAppointment = `${appointment}/appointment-patient`;
 
 export const getDoctors = `${doctor}`;
 
