@@ -1,10 +1,7 @@
 import {
   Box,
   FormControl,
-  FormControlLabel,
   FormLabel,
-  Radio,
-  RadioGroup,
   TextField,
 } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
@@ -13,10 +10,12 @@ import moment from 'moment';
 
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
+import { useUser } from "../../../context/UserContext";
 
 const ScheduleSelector = ({ data, callBack, canProceed }) => {
   const [scheduleData, setScheduleData] = useState({});
   const debounceTimeout = useRef(null);
+  const { doctorsList } = useUser();
 
   const tomorrow = new Date();
   tomorrow.setDate(new Date().getDate() + 1);
@@ -54,6 +53,10 @@ const ScheduleSelector = ({ data, callBack, canProceed }) => {
 
     canProceed(hasValue);
   };
+
+  const getSelectedDoctor = (id) => {
+    return doctorsList.filter((a) => a.doctor_id === id);
+  }
   useEffect(() => {
     if (data) {
       setScheduleData({
@@ -62,6 +65,9 @@ const ScheduleSelector = ({ data, callBack, canProceed }) => {
           : null,
         amPm: data?.amPm || "AM",
       });
+      console.log(data);
+      
+      console.log(getSelectedDoctor(data?.doctorId));
     }
   }, []);
 

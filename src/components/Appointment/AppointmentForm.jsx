@@ -51,8 +51,8 @@ const AppointmentForm = () => {
   const [formSteps, setFormSteps] = useState([
     { label: "Patient Details", canProceed: false },
     { label: "Describe Concern", canProceed: false },
-    { label: "Select a Date", canProceed: false },
     { label: "Choose your Doctor", canProceed: false },
+    { label: "Select a Date", canProceed: false },
   ]);
 
   const navigate = useNavigate();
@@ -232,17 +232,17 @@ const AppointmentForm = () => {
                   }
                 />
               ) : index === 2 ? (
-                <ScheduleSelector
+                <SpecialistDetails
                   data={formData}
-                  callBack={getPatientScheduleDate}
+                  callBack={getSpecialistDetails}
                   canProceed={(canProceedValue) =>
                     updateStepCanProceed(2, canProceedValue)
                   }
                 />
               ) : index === 3 ? (
-                <SpecialistDetails
+                <ScheduleSelector
                   data={formData}
-                  callBack={getSpecialistDetails}
+                  callBack={getPatientScheduleDate}
                   canProceed={(canProceedValue) =>
                     updateStepCanProceed(3, canProceedValue)
                   }

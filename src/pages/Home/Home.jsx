@@ -64,11 +64,10 @@ const Dashboard = () => {
             </Grid>
           </Grid>
           <Grid size={6}>
-            {/* Services Section */}
             <Container sx={{ padding: 4, marginLeft: 5 }}>
               <Grid container spacing={4} sx={{ cursor: "pointer" }}>
                 {[
-                  { title: "Hospital Services", imgSrc: HospitalService },
+                  { title: "Laboratory Services", imgSrc: HospitalService },
                   { title: "Doctor Consultation", imgSrc: DoctorConsultation },
                   { title: "View Appointment", imgSrc: PatientSupport },
                 ].map((service) => (

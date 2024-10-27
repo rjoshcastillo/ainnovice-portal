@@ -1,5 +1,4 @@
-// export const baseApi = 'http://localhost:5000/api'
-export const baseApi = `https://2d7c-65-181-9-241.ngrok-free.app/api`
+export const baseApi = 'https://bcc4-116-91-209-100.ngrok-free.app/api'
 
 export const Account = `${baseApi}/account`;
 export const Login = `${Account}/login`
