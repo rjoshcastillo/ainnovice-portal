@@ -3,6 +3,7 @@ import {
   saveAppointment as saveAppointmentEndpoint,
   getAppointment as getAppointmentEndpoint,
   checkDoctorsAvailability,
+  updateAppointment as updateAppointmentEndpoint,
 } from "./endpoint";
 
 const saveAppointment = async (payload) => {
@@ -35,8 +36,19 @@ const getAppointment = async (params = {}) => {
   }
 };
 
+const updateAppointment = async (payload) => {
+  try {
+    const response = await axios.post(`${updateAppointmentEndpoint}`, payload);
+    return response.data;
+  } catch (error) {
+    console.error("updateAppointment error", error);
+    throw error;
+  }
+};
+
 export default {
   saveAppointment,
   getAppointment,
-  checkDocAvailability
+  checkDocAvailability,
+  updateAppointment
 };

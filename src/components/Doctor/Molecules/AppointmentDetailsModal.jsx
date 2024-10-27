@@ -16,6 +16,7 @@ import {
   StepLabel, // Import Badge for the urgency indicator
 } from "@mui/material";
 import moment from "moment";
+import { updateAppointment } from "../../../services/endpoint";
 
 const AppointmentDetailsModal = ({ open, onClose, appointment }) => {
   const style = {
@@ -49,6 +50,10 @@ const AppointmentDetailsModal = ({ open, onClose, appointment }) => {
       setActiveStep(2);
     }
   }, [appointment.status]);
+
+  useEffect(() => {
+    
+  }, []);
   return (
     <Modal open={open} onClose={onClose}>
       <Box sx={style}>

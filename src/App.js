@@ -18,6 +18,7 @@ import Doctor from "./pages/Doctor/Doctor";
 import Patient from "./pages/Patient/Patient";
 import { Box, CircularProgress } from "@mui/material";
 import SnackbarProvider from "./context/SnackbarProvider";
+import Laboratory from "./pages/Laboratory/Laboratory";
 
 const theme = createTheme({
   palette: {
@@ -121,6 +122,14 @@ function AppWrapper() {
           element={
             <ProtectedRoute>
               <Appointment />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/laboratory"
+          element={
+            <ProtectedRoute>
+              <Laboratory />
             </ProtectedRoute>
           }
         />

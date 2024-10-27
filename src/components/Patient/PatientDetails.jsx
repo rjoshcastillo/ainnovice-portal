@@ -3,7 +3,6 @@ import {
   Button,
   Card,
   Divider,
-  FormControl,
   FormControlLabel,
   FormLabel,
   Radio,
@@ -11,9 +10,8 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import Grid from "@mui/material/Grid2";
 import { useUser } from "../../context/UserContext";
-import { useSnackbar } from '../../context/SnackbarProvider';
+
 
 function PatientDetails() {
   const { user } = useUser();

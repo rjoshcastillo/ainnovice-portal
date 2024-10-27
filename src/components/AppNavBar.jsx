@@ -33,6 +33,9 @@ function AppNavBar() {
     navigate("/");
   };
 
+  const handleServicesClick = () => {
+    navigate('/laboratory')
+  }
   const handleProfileClick = () => {
     navigate("/profile");
     handleCloseMenu();
@@ -85,7 +88,7 @@ function AppNavBar() {
             <Button color="inherit" onClick={handleHomeClick}>
               Home
             </Button>
-            <Button color="inherit">Our Services</Button>
+            <Button color="inherit" onClick={handleServicesClick}>Laboratory Services</Button>
             <Button color="inherit">About Us</Button>
 
             {/* Conditionally render Login button or profile icon */}
