@@ -30,20 +30,30 @@ const Dashboard = () => {
 
   return (
     <Box>
-      <Container sx={{ my: 6}}>
-        <Card sx={{ padding: 4, display: 'flex', height: '100%' }}>
+      <Container sx={{ my: 6 }}>
+        <Card sx={{ padding: 4, display: "flex", height: "100%" }}>
           <Box
             sx={{
-              width: '70%',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'flex-start',
-              flexDirection: 'column'
+              width: "70%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "flex-start",
+              flexDirection: "column",
             }}
           >
             <Typography variant="h4" component="h1" gutterBottom>
-              Welcome, {user.fullName}
+              Welcome to our <br />
+              <Typography
+                variant="h4"
+                component="span"
+                color="primary"
+                sx={{ fontWeight: 700 }}
+              >
+                Online AI
+              </Typography>{" "}
+              Services
             </Typography>
+
             <Typography variant="body1" paragraph>
               At <strong>AINNovice</strong>, we are dedicated to revolutionizing
               your healthcare experience with our AI-powered online services,
@@ -58,7 +68,7 @@ const Dashboard = () => {
               Book an Appointment
             </Button>
           </Box>
-          <Box sx={{ width: '30%' }}>
+          <Box sx={{ width: "30%" }}>
             <img
               src={HeaderImage}
               alt="Online Services"
@@ -68,36 +78,41 @@ const Dashboard = () => {
         </Card>
       </Container>
       <Container>
-          <Box
-            container
-            spacing={4}
-            sx={{ cursor: "pointer", display: 'flex', height: '100%', justifyContent: 'space-between'}}
-          >
-            {[ 
-              { title: "Laboratory Services", imgSrc: HospitalService },
-              { title: "Doctor Consultation", imgSrc: DoctorConsultation },
-              { title: "View Appointment", imgSrc: PatientSupport },
-            ].map((service) => (
-              <Box key={service.title}>
-                <Card sx={{ height: '100%', width: '350px' }}>
-                  <CardMedia
-                    component="img"
-                    height="250"
-                    image={service.imgSrc}
-                    alt={service.title}
-                  />
-                  <CardContent>
-                    <Typography
-                      gutterBottom
-                      sx={{ fontSize: 20, textAlign: "center" }}
-                    >
-                      {service.title}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Box>
-            ))}
-          </Box>
+        <Box
+          container
+          spacing={4}
+          sx={{
+            cursor: "pointer",
+            display: "flex",
+            height: "100%",
+            justifyContent: "space-between",
+          }}
+        >
+          {[
+            { title: "Laboratory Services", imgSrc: HospitalService },
+            { title: "Doctor Consultation", imgSrc: DoctorConsultation },
+            { title: "View Appointment", imgSrc: PatientSupport },
+          ].map((service) => (
+            <Box key={service.title}>
+              <Card sx={{ height: "100%", width: "350px" }}>
+                <CardMedia
+                  component="img"
+                  height="250"
+                  image={service.imgSrc}
+                  alt={service.title}
+                />
+                <CardContent>
+                  <Typography
+                    gutterBottom
+                    sx={{ fontSize: 20, textAlign: "center" }}
+                  >
+                    {service.title}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Box>
+          ))}
+        </Box>
       </Container>
     </Box>
   );
