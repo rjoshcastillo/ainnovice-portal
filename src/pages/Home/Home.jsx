@@ -27,19 +27,27 @@ const Dashboard = () => {
       navigate("/login"); // Redirect to login page if not logged in
     }
   };
+
   return (
     <Box>
-      <Container sx={{ my: 6 }}>
-        <Grid sx={{ padding: 4 }}>
-          <Grid item xs={12} md={6}>
+      <Container sx={{ my: 6}}>
+        <Card sx={{ padding: 4, display: 'flex', height: '100%' }}>
+          <Box
+            sx={{
+              width: '70%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'flex-start',
+              flexDirection: 'column'
+            }}
+          >
             <Typography variant="h4" component="h1" gutterBottom>
               Welcome, {user.fullName}
             </Typography>
             <Typography variant="body1" paragraph>
-              At <strong>AINNovice</strong>, we are dedicated to revolutionizing your healthcare
-              experience with our AI-powered online services, tailored to meet
-              all your needs. Your health is our top
-              priority!
+              At <strong>AINNovice</strong>, we are dedicated to revolutionizing
+              your healthcare experience with our AI-powered online services,
+              tailored to meet all your needs. Your health is our top priority!
             </Typography>
             <Button
               variant="contained"
@@ -49,48 +57,47 @@ const Dashboard = () => {
             >
               Book an Appointment
             </Button>
-          </Grid>
-        </Grid>
+          </Box>
+          <Box sx={{ width: '30%' }}>
+            <img
+              src={HeaderImage}
+              alt="Online Services"
+              style={{ width: "100%" }}
+            />
+          </Box>
+        </Card>
       </Container>
       <Container>
-        <Grid container sx={{ justifyContent: "space-between"}}>
-          <Grid size={5} sx={{ my: 12}}>
-            <Grid item>
-              <img
-                src={HeaderImage}
-                alt="Online Services"
-                style={{ width: "100%" }}
-              />
-            </Grid>
-          </Grid>
-          <Grid size={6}>
-            <Container sx={{ padding: 4, marginLeft: 5 }}>
-              <Grid container spacing={4} sx={{ cursor: "pointer" }}>
-                {[
-                  { title: "Laboratory Services", imgSrc: HospitalService },
-                  { title: "Doctor Consultation", imgSrc: DoctorConsultation },
-                  { title: "View Appointment", imgSrc: PatientSupport },
-                ].map((service) => (
-                  <Grid item xs={12} sm={6} md={4} key={service.title}>
-                    <Card>
-                      <CardMedia
-                        component="img"
-                        height="170"
-                        image={service.imgSrc}
-                        alt={service.title}
-                      />
-                      <CardContent>
-                        <Typography gutterBottom sx={{ fontSize: 20, textAlign: 'center' }}>
-                          {service.title}
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                ))}
-              </Grid>
-            </Container>
-          </Grid>
-        </Grid>
+          <Box
+            container
+            spacing={4}
+            sx={{ cursor: "pointer", display: 'flex', height: '100%', justifyContent: 'space-between'}}
+          >
+            {[ 
+              { title: "Laboratory Services", imgSrc: HospitalService },
+              { title: "Doctor Consultation", imgSrc: DoctorConsultation },
+              { title: "View Appointment", imgSrc: PatientSupport },
+            ].map((service) => (
+              <Box key={service.title}>
+                <Card sx={{ height: '100%', width: '350px' }}>
+                  <CardMedia
+                    component="img"
+                    height="250"
+                    image={service.imgSrc}
+                    alt={service.title}
+                  />
+                  <CardContent>
+                    <Typography
+                      gutterBottom
+                      sx={{ fontSize: 20, textAlign: "center" }}
+                    >
+                      {service.title}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Box>
+            ))}
+          </Box>
       </Container>
     </Box>
   );
