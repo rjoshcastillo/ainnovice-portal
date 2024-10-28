@@ -20,18 +20,6 @@ const DoctorAppointmentList = () => {
       };
       await Appointment.getAppointment(params).then((res) => {
         const newAppointments = Array.isArray(res.data) ? res.data : [];
-            // Filter appointments for today
-            
-
-            // // today filtering
-            // const todayAppointments = newAppointments.filter(appointment => 
-            //   moment(appointment.appointment_date).isSame(moment(), 'day') 
-            // );
-
-            // // tomorrow filtering
-            // const tomorrowAppointments = newAppointments.filter(appointment =>
-            //   moment(appointment.appointment_date).isSame(moment().add(1, 'days'), 'day') // Adjust 'date' to match your appointment date field
-            // );
 
         setAppointments(newAppointments);
         console.log(appointments);

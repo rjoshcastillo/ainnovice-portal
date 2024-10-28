@@ -10,6 +10,7 @@ const AppointmentCard = ({
   appointment_date,
   appointment_start,
   appointment_end,
+  urgency,
   onClick,
 }) => {
   return (
@@ -35,7 +36,7 @@ const AppointmentCard = ({
         {medical_concern}
       </Typography>
       <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-        <StatusChip status={"Urgent"} />
+        {urgency >= 7 ? <StatusChip status={"Urgent"} /> : <></>}
         <StatusChip status={status} />
       </Box>
 

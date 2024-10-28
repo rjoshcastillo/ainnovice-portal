@@ -92,9 +92,6 @@ const AppointmentDetailsModal = ({
       });
       if (res.status) {
         onStatusChange();
-        if (res.appointment_status === "Completed") {
-          onClose();
-        }
         openSnackbar(res.message, "success", 4000);
       }
     } catch (error) {
