@@ -202,7 +202,7 @@ const AppointmentDetailsModal = ({
                       <ListItem key={equipment.name}>
                         <ListItemIcon>
                           <img
-                            src={`../../../assets/${equipment.icon}`}
+                            src={require(`../../../assets/${equipment.icon}`)}
                             alt={`${equipment.name} icon`}
                             style={{ width: 24, height: 24 }}
                           />

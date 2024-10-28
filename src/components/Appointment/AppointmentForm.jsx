@@ -154,6 +154,7 @@ const AppointmentForm = () => {
           urgency: urgency.data,
           estimate: est.data,
           status: "Waiting",
+          created_at: new Date()
         };
 
         saveAppointment(newFormData)

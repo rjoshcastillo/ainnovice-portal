@@ -13,15 +13,21 @@ const AppointmentCard = ({
   urgency,
   onClick,
 }) => {
+  const handleClick = () => {
+    if (status !== "Cancelled") {
+      onClick();
+    }
+  };
   return (
     <Paper
-      onClick={onClick}
+      onClick={handleClick}
       elevation={3}
       sx={{
         padding: 2,
         width: "300px",
         transition: "0.3s ease",
         cursor: "pointer",
+        opacity: status === "Cancelled" ? 0.5 : 1,
         "&:hover": {
           elevation: 6,
           backgroundColor: "#f5f5f5",

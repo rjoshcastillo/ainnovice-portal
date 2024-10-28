@@ -15,7 +15,7 @@ const LaboratoryCard = ({ icon, name, onClick }) => (
     <Box width="100%" height="100%" sx={{ textAlign: "center" }}>
       {icon && (
         <Box width="100%" height="80%" sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <img src={`../../assets/${icon}`} alt={name} style={{ width: 60, height: 60 }} />
+          <img src={require(`../../assets/${icon}`)} alt={name} style={{ width: 60, height: 60 }} />
         </Box>
       )}
       <Box width="100%" height="20%">
