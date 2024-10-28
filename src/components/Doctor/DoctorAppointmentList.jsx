@@ -54,7 +54,7 @@ const DoctorAppointmentList = () => {
 
   useEffect(() => {
     fetchAppointments();
-    setisStatusChange(false); // Reset after fetch
+    setisStatusChange(false); 
   }, [isStatusChange]);
   return (
     <Box>
