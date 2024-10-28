@@ -15,6 +15,7 @@ export const saveAppointment = `${appointment}/appointment-settler`;
 export const getAppointment = `${appointment}/appointment-patient`;
 
 export const getDoctors = `${doctor}`;
+export const getDoctorsAvailableDates = `${doctor}/available-dates`
 
 export const prediction = `${baseApi}/ml`;
 export const durationEstimate = `${prediction}/time-estimate`

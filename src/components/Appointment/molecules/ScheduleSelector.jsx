@@ -11,14 +11,22 @@ import moment from 'moment';
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
 import { useUser } from "../../../context/UserContext";
+import Doctor from '../../../services/doctor.services';
 
 const ScheduleSelector = ({ data, callBack, canProceed }) => {
   const [scheduleData, setScheduleData] = useState({});
+  const [availableDates, setAvailableDates] = useState([]);
   const debounceTimeout = useRef(null);
   const { doctorsList } = useUser();
 
-  const tomorrow = new Date();
-  tomorrow.setDate(new Date().getDate() + 1);
+  const today = new Date();
+  today.setDate(new Date().getDate());
+
+
+  const isDateAvailable = (date) => {
+    const formattedDate = moment(date).format("YYYY-MM-DD");
+    return availableDates.includes(formattedDate);
+  };
 
   const onChange = (e, newValue = null, inputType = "input") => {
     let name, value;
@@ -54,10 +62,16 @@ const ScheduleSelector = ({ data, callBack, canProceed }) => {
     canProceed(hasValue);
   };
 
-  const getSelectedDoctor = (id) => {
-    return doctorsList.filter((a) => a.doctor_id === id);
+  const getDoctorsAvailableDates = async (id) => {
+    await Doctor.getDoctorsAvailability(id).then((res) => {
+      console.log(res);
+      
+      setAvailableDates(res);
+    })
   }
+  
   useEffect(() => {
+    
     if (data) {
       setScheduleData({
         appointmentDate: data?.appointmentDate
@@ -65,9 +79,8 @@ const ScheduleSelector = ({ data, callBack, canProceed }) => {
           : null,
         amPm: data?.amPm || "AM",
       });
-      console.log(data);
-      
-      console.log(getSelectedDoctor(data?.doctorId));
+     
+      getDoctorsAvailableDates(data?.doctorId);
     }
   }, []);
 
@@ -88,7 +101,8 @@ const ScheduleSelector = ({ data, callBack, canProceed }) => {
             label="Appointment Date"
             value={scheduleData.appointmentDate ? moment(scheduleData.appointmentDate).toDate() : null}
             onChange={(newDate) => onChange(null, newDate, "date")}
-            minDate={tomorrow}
+            minDate={today}
+            shouldDisableDate={(date) => !isDateAvailable(date)}
             renderInput={(props) => <TextField {...props} />}
           />
         </LocalizationProvider>
