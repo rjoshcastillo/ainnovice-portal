@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Modal,
   Box,
@@ -13,12 +13,18 @@ import {
   Badge,
   Stepper,
   Step,
-  StepLabel, // Import Badge for the urgency indicator
+  StepLabel,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from "@mui/material";
 import moment from "moment";
-import { updateAppointment } from "../../../services/endpoint";
+import Appointment from "../../../services/appointment.services";
+import { useSnackbar } from "../../../context/SnackbarProvider";
 
-const AppointmentDetailsModal = ({ open, onClose, appointment }) => {
+const AppointmentDetailsModal = ({ open, onClose, appointment, onStatusChange }) => {
   const style = {
     position: "absolute",
     top: "50%",
@@ -33,12 +39,72 @@ const AppointmentDetailsModal = ({ open, onClose, appointment }) => {
   };
 
   const steps = ["Waiting", "Ongoing", "Completed"];
-  const [activeStep, setActiveStep] = React.useState(0);
+  const [activeStep, setActiveStep] = useState(0);
+  const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
+  const openSnackbar = useSnackbar();
 
-  const handleNext = () => {
+  const handleNext = async () => {
+    const statusMap = ["Waiting", "Ongoing", "Completed"];
     setActiveStep((prev) => Math.min(prev + 1, steps.length - 1));
+
+    const newStatus = statusMap[activeStep + 1];
+    try {
+      const res = await Appointment.updateAppointment({
+        appointment_id: appointment.appointment_id,
+        status: newStatus,
+      });
+      if (res.status) {
+        onStatusChange(); // Trigger fetchAppointments
+        if (res.appointment_status === "Completed") {
+          onClose(); // Close modal if appointment is completed
+        }
+        openSnackbar(
+          `${res.message}`,
+          "success",
+          4000
+        );
+      }
+    } catch (error) {
+      console.error("Failed to update appointment status:", error);
+      openSnackbar(
+        "Oh no! An error occurred while updating appointment.",
+        "error",
+        4000
+      );
+    }
+  };
+  const handleCancelAppointment = async () => {
+    try {
+      const res = await Appointment.updateAppointment({
+        appointment_id: appointment.appointment_id,
+        status: 'Cancelled',
+      });
+      if (res.status) {
+        onStatusChange();
+        onClose();
+        openSnackbar(
+          `${res.message}`,
+          "success",
+          4000
+        );
+      }
+    } catch (error) {
+      console.error("Failed to update appointment status:", error);
+      openSnackbar(
+        "Oh no! An error occurred while updating appointment.",
+        "error",
+        4000
+      );
+    }
+    setConfirmationDialogOpen(false);
+  };
+  const handleCancelClick = () => {
+    setConfirmationDialogOpen(true); // Open the confirmation dialog
   };
 
+  const handleDialogClose = () => {
+    setConfirmationDialogOpen(false); // Close dialog without canceling
+  };
   useEffect(() => {
     if (appointment.status === "Waiting") {
       setActiveStep(0);
@@ -55,6 +121,7 @@ const AppointmentDetailsModal = ({ open, onClose, appointment }) => {
     
   }, []);
   return (
+    <>
     <Modal open={open} onClose={onClose}>
       <Box sx={style}>
         <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -231,8 +298,18 @@ const AppointmentDetailsModal = ({ open, onClose, appointment }) => {
           </Box>
         </Box>
         <Box
-          sx={{ display: "flex", justifyContent: "flex-end", mt: 3, gap: 2 }}
+          sx={{ display: "flex", justifyContent: "space-between", mt: 3, gap: 2 }}
         >
+          <Box sx={{ display: "flex", mt: 3, gap: 2 }}>
+          <Button
+              variant="contained"
+              onClick={handleCancelClick}
+              color="error"
+              disabled={activeStep !== 0}
+            >
+              Cancel Appointment
+            </Button>
+          </Box>
           <Box
             sx={{ display: "flex", justifyContent: "flex-end", mt: 3, gap: 2 }}
           >
@@ -241,7 +318,7 @@ const AppointmentDetailsModal = ({ open, onClose, appointment }) => {
               onClick={handleNext}
               disabled={activeStep === steps.length - 1}
             >
-              Next
+              { activeStep === 2 ? "Finish" : "Next"}
             </Button>
             <Button variant="contained" onClick={onClose}>
               Close
@@ -250,6 +327,30 @@ const AppointmentDetailsModal = ({ open, onClose, appointment }) => {
         </Box>
       </Box>
     </Modal>
+
+    {/* Confirmation Dialog */}
+    <Dialog
+    open={confirmationDialogOpen}
+    onClose={handleDialogClose}
+    aria-labelledby="confirmation-dialog-title"
+    aria-describedby="confirmation-dialog-description"
+  >
+    <DialogTitle id="confirmation-dialog-title">Cancel Appointment</DialogTitle>
+    <DialogContent>
+      <DialogContentText id="confirmation-dialog-description">
+        Are you sure you want to cancel this appointment? This action cannot be undone.
+      </DialogContentText>
+    </DialogContent>
+    <DialogActions>
+      <Button onClick={handleDialogClose} color="primary">
+        No
+      </Button>
+      <Button onClick={handleCancelAppointment} color="error" autoFocus>
+        Yes, Cancel
+      </Button>
+    </DialogActions>
+  </Dialog>
+  </>
   );
 };
 

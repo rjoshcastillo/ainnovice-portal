@@ -10,6 +10,7 @@ const DoctorAppointmentList = () => {
   const { user } = useUser();
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [isStatusChange, setisStatusChange] = useState(false);
 
   const fetchAppointments = async () => {
     try {
@@ -27,7 +28,7 @@ const DoctorAppointmentList = () => {
       console.error("Error fetching appointments:", error);
     }
   };
-
+  
   const handleOpenModal = (appointment) => {
     setSelectedAppointment(appointment);
     setModalOpen(true);
@@ -40,7 +41,8 @@ const DoctorAppointmentList = () => {
 
   useEffect(() => {
     fetchAppointments();
-  }, []);
+    setisStatusChange(false); // Reset after fetch
+  }, [isStatusChange]);
   return (
     <Box>
       <Grid container spacing={3}>
@@ -69,6 +71,7 @@ const DoctorAppointmentList = () => {
           open={modalOpen}
           onClose={handleCloseModal}
           appointment={selectedAppointment}
+          onStatusChange={() => setisStatusChange(true)}
         />
       )}
     </Box>
