@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {
   Box,
   TextField,
@@ -16,10 +16,14 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { isDateUnavailable } from "../../helper/holiday";
 
-const LaboratoryForm = ({ user, activeStep  }) => {
+const LaboratoryForm = ({ user, activeStep, onDateChange  }) => {
   const steps = ["Personal Details", "Select Date & Time"];
+  const [date, setDate] = useState('')
 
-
+  const handleDateSelect = (value) => {
+    setDate(value);
+    onDateChange(value);  // Pass the selected date back to the parent
+  };
   return (
     <Box>
       <Stepper activeStep={activeStep} alternativeLabel>
@@ -65,6 +69,7 @@ const LaboratoryForm = ({ user, activeStep  }) => {
                 defaultValue={dayjs()}
                 views={["year", "month", "day"]}
                 shouldDisableDate={isDateUnavailable}
+                onChange={handleDateSelect}
               />
             </LocalizationProvider>
           </Box>

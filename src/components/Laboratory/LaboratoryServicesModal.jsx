@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import {
   Dialog,
@@ -9,11 +10,20 @@ import {
 } from "@mui/material";
 import LaboratoryForm from "./LaboratoryForm";
 import { useUser } from "../../context/UserContext";
+import { useSnackbar } from "../../context/SnackbarProvider";
+import Appointment from "../../services/appointment.services";
+
 
 const LaboratoryServicesModal = ({ open, service, onClose }) => {
   const { user } = useUser();
+  const openSnackbar = useSnackbar();
   const [activeStep, setActiveStep] = useState(0);
   const [openCancelConfirm, setOpenCancelConfirm] = useState(false);
+  const [appointmentDate, setAppointmentDate] = useState(null);
+
+  const handleDateChange = (date) => {
+    setAppointmentDate(date); // Update appointmentDate when a date is selected in LaboratoryForm
+  };
 
   if (!service) return null;
 
@@ -26,16 +36,42 @@ const LaboratoryServicesModal = ({ open, service, onClose }) => {
     setOpenCancelConfirm(false);
     onClose();
   };
-  const handleFinish = () => {
-    // Add finish logic if needed
-    onClose();
+
+  console.log(service)
+  
+  console.log(appointmentDate)
+  const laboratoryRequest = async () => {
+    try {
+      
+      const payload = {
+        patient_id: user.id,
+        equipment_id: service.equipment_id,
+        appointment_date: appointmentDate
+      };
+      console.log(payload)
+      const res = await Appointment.laboratoryRequest(payload);
+      console.log(res);
+      openSnackbar(
+        "You're officially on the schedule. See you then!",
+        "success",
+        4000
+      );
+      onClose();
+    } catch (error) {
+      console.log(error);
+      openSnackbar(`Failed: ${error}`, "error", 4000);
+    }
+  };
+  const handleFinish = async () => {
+    // Execute the request through the onRequest prop
+    laboratoryRequest()
   };
 
   return (
     <Dialog open={open} onClose={onClose} aria-labelledby="service-dialog-title" PaperProps={{
         style: {
-          width: '500px', // Set the desired width
-          height: '600px', // Set the desired height
+          width: '500px',
+          height: '600px',
         },
       }}>
       <DialogTitle id="service-dialog-title">{service.name}</DialogTitle>
@@ -47,6 +83,7 @@ const LaboratoryServicesModal = ({ open, service, onClose }) => {
           handleBack={handleBack}
           handleCancel={handleCancel}
           handleFinish={handleFinish}
+          onDateChange={handleDateChange}
         />
       </DialogContent>
       <DialogActions>

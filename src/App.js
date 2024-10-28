@@ -85,7 +85,7 @@ const LoginRouteGuard = ({ children }) => {
 const LaboratoryRoute = () => {
   const { user } = useUser();
 
-  if (user?.type !== "patient") {
+  if (user.type !== "patient") {
     return <Navigate to="/not-found" />; // Redirect to Not Found page if not patient
   }
 

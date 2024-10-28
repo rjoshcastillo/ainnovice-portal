@@ -4,7 +4,7 @@ import AppointmentCard from "./Molecules/AppointmentCard";
 import Appointment from "../../services/appointment.services";
 import { useUser } from "../../context/UserContext";
 import AppointmentDetailsModal from "./Molecules/AppointmentDetailsModal";
-
+import moment from "moment";
 const DoctorAppointmentList = () => {
   const [appointments, setAppointments] = useState([]);
   const { user } = useUser();
@@ -20,10 +20,23 @@ const DoctorAppointmentList = () => {
       };
       await Appointment.getAppointment(params).then((res) => {
         const newAppointments = Array.isArray(res.data) ? res.data : [];
-        setAppointments(newAppointments);
-      });
+            // Filter appointments for today
+            
 
-      console.log(appointments);
+            // // today filtering
+            // const todayAppointments = newAppointments.filter(appointment => 
+            //   moment(appointment.appointment_date).isSame(moment(), 'day') 
+            // );
+
+            // // tomorrow filtering
+            // const tomorrowAppointments = newAppointments.filter(appointment =>
+            //   moment(appointment.appointment_date).isSame(moment().add(1, 'days'), 'day') // Adjust 'date' to match your appointment date field
+            // );
+
+        setAppointments(newAppointments);
+        console.log(appointments);
+           
+      });
     } catch (error) {
       console.error("Error fetching appointments:", error);
     }

@@ -1,5 +1,4 @@
 import { Box, Typography, Card } from "@mui/material";
-
 const LaboratoryCard = ({ icon, name, onClick }) => (
   <Card
     variant="outlined"
@@ -16,7 +15,7 @@ const LaboratoryCard = ({ icon, name, onClick }) => (
     <Box width="100%" height="100%" sx={{ textAlign: "center" }}>
       {icon && (
         <Box width="100%" height="80%" sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <img src={icon} alt={name} style={{ width: 60, height: 60 }} />
+          <img src={`../../assets/${icon}`} alt={name} style={{ width: 60, height: 60 }} />
         </Box>
       )}
       <Box width="100%" height="20%">

@@ -1,4 +1,4 @@
-export const baseApi = 'https://ad36-14-1-64-36.ngrok-free.app/api'
+export const baseApi = 'https://ea7f-14-1-65-33.ngrok-free.app/api'
 
 export const Account = `${baseApi}/account`;
 export const Login = `${Account}/login`
@@ -6,7 +6,10 @@ export const doctor = `${baseApi}/doctor`;
 
 
 export const appointment = `${baseApi}/appointment`;
-export const updateAppointment = `${appointment}/update`
+export const updateAppointment = `${appointment}/update`;
+export const updateSummary = `${appointment}/update-appointment-summary`;
+export const laboratoryRequest = `${appointment}/lab-request`
+export const getEquipments = `${appointment}/get-equipments`;
 export const checkDoctorsAvailability = `${appointment}/available-doctor`
 export const saveAppointment = `${appointment}/appointment-settler`;
 export const getAppointment = `${appointment}/appointment-patient`;

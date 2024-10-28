@@ -4,6 +4,9 @@ import {
   getAppointment as getAppointmentEndpoint,
   checkDoctorsAvailability,
   updateAppointment as updateAppointmentEndpoint,
+  updateSummary as updateSummaryEndpoint,
+  getEquipments as getEquipmentsEndpoint,
+  laboratoryRequest as laboratoryRequestEndPoint,
 } from "./endpoint";
 
 const saveAppointment = async (payload) => {
@@ -46,9 +49,40 @@ const updateAppointment = async (payload) => {
   }
 };
 
+const updateSummary = async (payload) => {
+  try {
+    const response = await axios.post(`${updateSummaryEndpoint}`, payload);
+    return response.data;
+  } catch (error) {
+    console.error("updateSummary error", error);
+    throw error;
+  }
+};
+const getEquipments = async () => {
+  try {
+    const response = await axios.get(`${getEquipmentsEndpoint}`);
+    return response.data;
+  } catch (error) {
+    console.error("updateSummary error", error);
+    throw error;
+  }
+};
+
+const laboratoryRequest = async (payload) => {
+  try {
+    const response = await axios.post(`${laboratoryRequestEndPoint}`, payload);
+    return response.data;
+  } catch (error) {
+    console.error("laboratoryRequest error", error);
+    throw error;
+  }
+};
 export default {
   saveAppointment,
   getAppointment,
   checkDocAvailability,
-  updateAppointment
+  updateAppointment,
+  updateSummary,
+  getEquipments,
+  laboratoryRequest,
 };
