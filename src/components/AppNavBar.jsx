@@ -11,7 +11,7 @@ import {
   Avatar,
   Menu,
   MenuItem,
-  Container
+  Container,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import { useUser } from "../context/UserContext";
@@ -34,8 +34,8 @@ function AppNavBar() {
   };
 
   const handleServicesClick = () => {
-    navigate('/laboratory')
-  }
+    navigate("/laboratory");
+  };
   const handleProfileClick = () => {
     navigate("/profile");
     handleCloseMenu();
@@ -53,7 +53,6 @@ function AppNavBar() {
   const handleCloseMenu = () => {
     setAnchorEl(null);
   };
-
   return (
     <AppBar
       position="static"
@@ -88,7 +87,11 @@ function AppNavBar() {
             <Button color="inherit" onClick={handleHomeClick}>
               Home
             </Button>
-            <Button color="inherit" onClick={handleServicesClick}>Laboratory Services</Button>
+            {user && user.type === "patient" && (
+              <Button color="inherit" onClick={handleServicesClick}>
+                Laboratory Services
+              </Button>
+            )}
             <Button color="inherit">About Us</Button>
 
             {/* Conditionally render Login button or profile icon */}

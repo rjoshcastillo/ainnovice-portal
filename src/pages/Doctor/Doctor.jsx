@@ -262,7 +262,10 @@ const Doctor = () => {
                   <DoctorAppointmentList />
                 </Box>
               )}
+              {item.header === "Patients" && <UnderMaintenance />}
               {item.header === "Payment" && <UnderMaintenance />}
+              {item.header === "Clinic" && <UnderMaintenance />}
+              {item.header === "My Profile" && <UnderMaintenance />}
               {/* Add other conditions for Patients, Payment, Clinic, etc., as needed */}
             </TabPanel>
           ))}

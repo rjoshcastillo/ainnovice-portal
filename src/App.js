@@ -19,6 +19,7 @@ import Patient from "./pages/Patient/Patient";
 import { Box, CircularProgress } from "@mui/material";
 import SnackbarProvider from "./context/SnackbarProvider";
 import Laboratory from "./pages/Laboratory/Laboratory";
+import NotFound from "./pages/NotFound/NotFound";
 
 const theme = createTheme({
   palette: {
@@ -60,6 +61,7 @@ const HomeRoute = () => {
         <ProtectedRoute>
           <Doctor />
         </ProtectedRoute>
+
       );
     } else if (user?.type === "patient") {
       return (
@@ -80,10 +82,25 @@ const LoginRouteGuard = ({ children }) => {
 
   return children;
 };
+const LaboratoryRoute = () => {
+  const { user } = useUser();
 
+  if (user?.type !== "patient") {
+    return <Navigate to="/not-found" />; // Redirect to Not Found page if not patient
+  }
+
+  return (
+    <ProtectedRoute>
+      <Laboratory />
+    </ProtectedRoute>
+  );
+};
 function AppWrapper() {
   const location = useLocation();
   const { isAppLoading } = useUser();
+  const noNavBarRoutes = ["/login", "/not-found"]; // List of routes without AppNavBar
+  const shouldDisplayNavBar = !noNavBarRoutes.includes(location.pathname);
+
   return (
     <>
       <Box></Box>
@@ -107,7 +124,7 @@ function AppWrapper() {
         </Box>
       ) : null}
 
-      {location.pathname !== "/login" && <AppNavBar />}
+      {shouldDisplayNavBar && <AppNavBar />}
 
       <Routes>
         <Route
@@ -127,14 +144,12 @@ function AppWrapper() {
             </ProtectedRoute>
           }
         />
-        <Route
+ <Route
           path="/laboratory"
-          element={
-            <ProtectedRoute>
-              <Laboratory />
-            </ProtectedRoute>
-          }
+          element={<LaboratoryRoute />} // Use the new LaboratoryRoute
         />
+        <Route path="/not-found" element={<NotFound/>} /> {/* Route for Not Found */}
+        <Route path="*" element={<Navigate to="/not-found" />} /> {/* Catch all other routes */}
       </Routes>
     </>
   );
