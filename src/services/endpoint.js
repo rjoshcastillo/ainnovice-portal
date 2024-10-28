@@ -1,4 +1,4 @@
-export const baseApi = 'https://f14d-14-1-65-33.ngrok-free.app/api'
+export const baseApi = 'https://b6c9-14-1-65-33.ngrok-free.app/api'
 
 export const Account = `${baseApi}/account`;
 export const Login = `${Account}/login`
