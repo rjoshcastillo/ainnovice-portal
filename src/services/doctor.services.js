@@ -1,4 +1,7 @@
-import { getDoctors as getDoctorsEndpoint } from "./endpoint";
+import {
+  getDoctors as getDoctorsEndpoint,
+  getDoctorsAvailableDates,
+} from "./endpoint";
 import axios from "axios";
 
 const getDoctors = async () => {
@@ -11,6 +14,19 @@ const getDoctors = async () => {
   }
 };
 
+const getDoctorsAvailability = async (id) => {
+  try {
+    const response = await axios.get(
+      `${getDoctorsAvailableDates}?doctor_id=${id}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("error", error);
+    throw error;
+  }
+};
+
 export default {
   getDoctors,
+  getDoctorsAvailability
 };
