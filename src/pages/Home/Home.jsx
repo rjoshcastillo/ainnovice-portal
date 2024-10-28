@@ -8,7 +8,6 @@ import {
   CardContent,
   CardMedia,
 } from "@mui/material";
-import Grid from "@mui/material/Grid2";
 import HeaderImage from "../../assets/doctor-patient-image.svg";
 import HospitalService from "../../assets/hospital-service.svg";
 import PatientSupport from "../../assets/patient-support.svg";

@@ -18,7 +18,7 @@ import AccessibilityNewOutlinedIcon from "@mui/icons-material/AccessibilityNewOu
 import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
 import DateToday from "../../components/common/DateToday";
 import UnderMaintenance from "../../components/common/UnderMaintenance";
-
+import { LineChart } from "@mui/x-charts/LineChart";
 const doctorHeader = [
   {
     id: 1,
@@ -79,6 +79,31 @@ const statusCard = [
   },
 ];
 
+const dataset = [
+  { patient: 1, predicted: 30, actual: 30 },
+  { patient: 2, predicted: 25, actual: 30 },
+  { patient: 3, predicted: 45, actual: 40 },
+  { patient: 4, predicted: 35, actual: 25 },
+  { patient: 5, predicted: 50, actual: 55 },
+  { patient: 6, predicted: 30, actual: 25 },
+  { patient: 7, predicted: 20, actual: 30 },
+  { patient: 8, predicted: 40, actual: 45 },
+  { patient: 9, predicted: 30, actual: 35 },
+  { patient: 10, predicted: 45, actual: 50 },
+  { patient: 11, predicted: 35, actual: 40 },
+  { patient: 12, predicted: 30, actual: 35 },
+  { patient: 13, predicted: 50, actual: 45 },
+  { patient: 14, predicted: 40, actual: 35 },
+  { patient: 15, predicted: 45, actual: 50 },
+  { patient: 16, predicted: 55, actual: 60 },
+  { patient: 17, predicted: 30, actual: 25 },
+  { patient: 18, predicted: 40, actual: 35 },
+  { patient: 19, predicted: 50, actual: 45 },
+  { patient: 20, predicted: 35, actual: 30 },
+];
+
+
+
 const Doctor = () => {
   const { user } = useUser();
   const [tab, setTab] = useState("1");
@@ -130,9 +155,9 @@ const Doctor = () => {
                   label={item.header}
                   value={String(item.id)}
                   sx={{
-                    fontSize: '18px',
+                    fontSize: "18px",
                     fontWeight: 600,
-                    }}
+                  }}
                 />
               ))}
             </TabList>
@@ -141,7 +166,15 @@ const Doctor = () => {
             <TabPanel key={item.id} value={String(item.id)} sx={{ px: 0 }}>
               {item.header === "Dashboard" && (
                 <Box>
-                  <Box mt={4} sx={{ marginBottom: "30px", display: 'flex',  justifyContent: 'space-between', alignItems: 'center'}}>
+                  <Box
+                    mt={4}
+                    sx={{
+                      marginBottom: "30px",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
                     <Box>
                       <Typography
                         variant="h4"
@@ -157,23 +190,61 @@ const Doctor = () => {
                     </Box>
                   </Box>
 
-                  <Box mt={2} sx={{ marginBottom: "30px", display: 'flex',  justifyContent: 'space-between', alignItems: 'center'}}>
+                  <Box
+                    mt={2}
+                    sx={{
+                      marginBottom: "30px",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
                     {statusCard.map((card, index) => (
                       <Grid key={index}>
-                          <DoctorStatsCards
-                            label={card.label}
-                            value={card.value}
-                            icon={card.icon}
-                            size={card.size}
-                          />
+                        <DoctorStatsCards
+                          label={card.label}
+                          value={card.value}
+                          icon={card.icon}
+                          size={card.size}
+                        />
                       </Grid>
                     ))}
+                  </Box>
+                  <Box>
+                    <Card sx={{ borderRadius: "10px", padding: '20px' }}>
+                      <Box>
+                        <Typography variant="h5" component="h3" color="primary">
+                          Predictive Analytics
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <LineChart
+                          dataset={dataset}
+                          xAxis={[{ dataKey: "patient" }]}
+                          series={[
+                            { dataKey: "predicted", name: "Predicted Time Spent", color: "blue" },
+                            { dataKey: "actual", name: "Actual Time Spent", color: "red" },
+                          ]}
+                          height={300}
+                          margin={{ left: 30, right: 30, top: 30, bottom: 30 }}
+                          grid={{ vertical: true, horizontal: true }}
+                        />
+                      </Box>
+                    </Card>
                   </Box>
                 </Box>
               )}
               {item.header === "Appointments" && (
                 <Box mt={4}>
-                  <Box mt={2} sx={{ marginBottom: "30px", display: 'flex',  justifyContent: 'space-between', alignItems: 'center'}}>
+                  <Box
+                    mt={2}
+                    sx={{
+                      marginBottom: "30px",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
                     <Box>
                       <Typography
                         variant="h4"
@@ -191,9 +262,7 @@ const Doctor = () => {
                   <DoctorAppointmentList />
                 </Box>
               )}
-              {item.header === "Payment" && (
-                <UnderMaintenance/>
-              )}
+              {item.header === "Payment" && <UnderMaintenance />}
               {/* Add other conditions for Patients, Payment, Clinic, etc., as needed */}
             </TabPanel>
           ))}

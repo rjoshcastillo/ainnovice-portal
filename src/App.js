@@ -52,7 +52,9 @@ const HomeRoute = () => {
   const { user } = useUser();
   if (!user?.isLogin) {
     return <Home />;
-  } else {
+  }
+
+  else {
     if (user?.type === "doctor") {
       return (
         <ProtectedRoute>
